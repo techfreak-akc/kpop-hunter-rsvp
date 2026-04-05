@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-pop Hunter Agent - Live RSVP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0d0221;
+            color: #d1d5db;
+        }
+        .neon-text {
+            color: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 20px #e600e6, 0 0 40px #e600e6;
+        }
+        .neon-border {
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 5px #00ffff, inset 0 0 5px #00ffff;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-8 flex flex-col items-center font-mono">
+    <div class="max-w-4xl w-full">
+        <header class="mb-12 text-center">
+            <h1 class="text-5xl font-bold neon-text uppercase tracking-widest">Agency Command</h1>
+            <p class="text-cyan-400 mt-4 text-xl tracking-wider">LIVE RSVP FEED - OPERATION CONCORD</p>
+        </header>
+
+        <main class="w-full">
+            <div class="bg-gray-900/50 backdrop-blur-md rounded-xl p-8 neon-border">
+                <div class="flex justify-between items-center mb-6 border-b border-cyan-800 pb-4">
+                    <h2 class="text-2xl text-cyan-300">Target Manifest</h2>
+                    <div class="flex items-center gap-4">
+                        <input type="text" id="search-input" placeholder="Search operatives..." class="bg-gray-800 border border-cyan-700 text-cyan-300 rounded px-3 py-1 focus:outline-none focus:border-pink-500 transition-colors placeholder-gray-500 w-48 text-sm">
+                        <button id="export-btn" class="bg-pink-600 hover:bg-pink-500 text-white px-4 py-1 rounded text-sm font-bold shadow-[0_0_10px_#ff00ff] transition-all">CSV EXPORT</button>
+                        <div class="animate-pulse bg-green-500 w-3 h-3 rounded-full shadow-[0_0_10px_#22c55e] ml-2"></div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-cyan-600 border-b border-cyan-900/50 text-sm uppercase">
+                                <th class="p-3">Operative</th>
+                                <th class="p-3">COM ID (Phone)</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rsvp-body" class="divide-y divide-cyan-900/30">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let allData = [];
+
+        async function fetchRSVPs() {
+            try {
+                const res = await fetch('/api/rsvps');
+                if(!res.ok) return;
+                const data = await res.json();
+                allData = data;
+                renderTable();
+            } catch (error) {
+                console.error("Feed interrupted:", error);
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('rsvp-body');
+            const searchVal = document.getElementById('search-input').value.toLowerCase();
+            tbody.innerHTML = '';
+            
+            const filteredData = allData.filter(rsvp => 
+                (rsvp.name && rsvp.name.toLowerCase().includes(searchVal)) || 
+                (rsvp.phone && rsvp.phone.includes(searchVal)) ||
+                (rsvp.status && rsvp.status.toLowerCase().includes(searchVal))
+            );
+
+            if (filteredData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500 italic">Awaiting incoming signals...</td></tr>';
+                    return;
+                }
+
+                data.forEach(rsvp => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-cyan-900/20 transition-colors';
+                    
+                    const statusColor = rsvp.status === 'ACCEPTED' ? 'text-green-400 font-bold' : (rsvp.status === 'DECLINED' ? 'text-red-400 font-bold' : 'text-gray-400');
+                    
+                    row.innerHTML = `
+                        <td class="p-3 text-pink-400 font-semibold">${rsvp.name || 'UNKNOWN'}</td>
+                        <td class="p-3 opacity-70">${rsvp.phone}</td>
+                        <td class="p-3 ${statusColor}">${rsvp.status}</td>
+                        <td class="p-3 opacity-50 text-sm">${new Date(rsvp.timestamp).toLocaleString()}</td>
+                    `;
+                    tbody.appendChild(row);
+            });
+        }
+
+        document.getElementById('search-input').addEventListener('input', renderTable);
+
+        document.getElementById('export-btn').addEventListener('click', () => {
+            if(allData.length === 0) return alert("Manifest is empty.");
+            const headers = "Operative,COM ID,Status,Timestamp\n";
+            const csv = allData.map(r => `${r.name || 'UNKNOWN'},${r.phone},${r.status},${new Date(r.timestamp).toLocaleString()}`).join('\n');
+            const blob = new Blob([headers + csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'kpop_hunter_manifest.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+
+        fetchRSVPs();
+        setInterval(fetchRSVPs, 3000);
+    </script>
+</body>
+</html>
