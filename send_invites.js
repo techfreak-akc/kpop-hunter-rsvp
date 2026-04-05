@@ -14,7 +14,7 @@ async function sendTemplateInvite(recipientPhone) {
       header: {
         type: "image",
         image: {
-          link: "https://your-ngrok-url/poster.jpg"
+          link: "https://kpop-hunter-rsvp.onrender.com/kpop-poster-2.jpeg"
         }
       },
       body: {
