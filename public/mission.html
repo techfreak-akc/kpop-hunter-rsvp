@@ -516,29 +516,16 @@
 
         <div id="yes-fields">
           <div class="field-row">
-            <label class="field-lbl" for="squad">// HUNTER HEADCOUNT (including yourself)</label>
-            <input type="number" id="squad" name="squadCount" min="1" max="20" placeholder="e.g. 2" />
+            <label class="field-lbl" for="adults">// ADULTS ATTENDING (including yourself)</label>
+            <input type="number" id="adults" name="adults" min="0" max="20" placeholder="e.g. 2" />
           </div>
           <div class="field-row">
-            <label class="field-lbl">// HUNTER FUEL SELECTION</label>
-            <div class="radio-row">
-              <div class="r-opt">
-                <input type="radio" name="food" id="f-veg" value="VEG" />
-                <label for="f-veg">🥦 VEG</label>
-              </div>
-              <div class="r-opt">
-                <input type="radio" name="food" id="f-nv" value="NON-VEG" />
-                <label for="f-nv">🍗 NON-VEG</label>
-              </div>
-              <div class="r-opt">
-                <input type="radio" name="food" id="f-both" value="BOTH" />
-                <label for="f-both">🍽️ BOTH</label>
-              </div>
-            </div>
+            <label class="field-lbl" for="kids">// KIDS ATTENDING</label>
+            <input type="number" id="kids" name="kids" min="0" max="20" placeholder="e.g. 1" />
           </div>
           <div class="field-row">
-            <label class="field-lbl" for="notes">// SPECIAL NOTES / ALLERGIES (optional)</label>
-            <input type="text" id="notes" name="notes" placeholder="Any dietary needs..." />
+            <label class="field-lbl" for="notes">// ANYTHING WE SHOULD KNOW? (optional)</label>
+            <input type="text" id="notes" name="notes" placeholder="Any notes for the hosts..." />
           </div>
         </div>
 
@@ -715,13 +702,9 @@
           statusInput.checked = true;
           document.getElementById('yes-fields').style.display = existing.status === 'ACCEPTED' ? 'block' : 'none';
         }
-        // Pre-fill squad count
-        if (existing.squadCount) document.getElementById('squad').value = existing.squadCount;
-        // Pre-fill food
-        if (existing.food) {
-          const foodInput = document.querySelector(`input[name="food"][value="${existing.food}"]`);
-          if (foodInput) foodInput.checked = true;
-        }
+        // Pre-fill adults/kids
+        if (existing.adults) document.getElementById('adults').value = existing.adults;
+        if (existing.kids) document.getElementById('kids').value = existing.kids;
         // Pre-fill notes
         if (existing.notes) document.getElementById('notes').value = existing.notes;
         // Update button + add notice
@@ -750,7 +733,8 @@
     btn.disabled = true;
 
     const data = Object.fromEntries(new FormData(e.target).entries());
-    data.squadCount = parseInt(data.squadCount) || 1;
+    data.adults = parseInt(data.adults) || 1;
+    data.kids = parseInt(data.kids) || 0;
 
     try {
       const res = await fetch('/submit-rsvp', {
@@ -765,7 +749,7 @@
       if (data.status === 'ACCEPTED') {
         document.getElementById('success-screen').style.display = 'block';
         document.getElementById('success-msg').innerHTML =
-          `Hunter squad of <strong>${data.squadCount}</strong> confirmed, <strong>${guestName}</strong>! 🗡️🎉<br/>Report to Base Camp — April 19th at 6 PM EST!`;
+          `<strong>${guestName}</strong> confirmed! 🗡️🎉<br/>${data.adults} adult${data.adults != 1 ? 's' : ''}${data.kids > 0 ? ` + ${data.kids} kid${data.kids != 1 ? 's' : ''}` : ''} — Report to Base Camp, April 19th at 6 PM EST!`;
         if (result.qrCode) {
           document.getElementById('qr-img').src = result.qrCode;
           document.getElementById('qr-wrap').style.display = 'inline-block';

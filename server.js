@@ -157,15 +157,15 @@ app.get('/mission/:guestName', (req, res) => {
 
 // Handle web RSVP form submission
 app.post('/submit-rsvp', async (req, res) => {
-  const { name, phone, status, squadCount, food, notes } = req.body;
+  const { name, phone, status, adults, kids, notes } = req.body;
   const QRCode = require('qrcode');
 
-  saveRsvp(phone || 'web', name || 'Guest', status, { squadCount, food, notes });
+  saveRsvp(phone || 'web', name || 'Guest', status, { adults, kids, notes });
 
   let qrCode = null;
   if (status === 'ACCEPTED') {
     try {
-      const badge = `AGENCY COMMAND\nOPERATIVE: ${(name || 'GUEST').toUpperCase()}\nSTATUS: CLEARED\nMISSION: OPERATION AAISHVY\nDATE: APRIL 19, 2026`;
+      const badge = `HUNTER COMMAND\nHUNTER: ${(name || 'GUEST').toUpperCase()}\nSTATUS: CONFIRMED\nTHE HUNT: AAISHVY'S 6TH\nDATE: APRIL 19, 2026`;
       qrCode = await QRCode.toDataURL(badge, {
         color: { dark: '#00f5ff', light: '#000014' },
         width: 300,
