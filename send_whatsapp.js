@@ -46,11 +46,13 @@ client.on('ready', async () => {
     const missionLink = `${BASE_URL}/mission/${encodedName}?phone=${phone}`;
 
     const message =
-      `Hey ${guest.name.split(' ')[0]}! 🎉\n\n` +
-      `Aaishvy's birthday is coming up and you're on our list! ` +
-      `I put together a special invite just for you — tap below to see it:\n\n` +
-      `🔗 ${missionLink}\n\n` +
-      `Hope to see you there! 🌟`;
+      `Hey ${guest.name.split(' ')[0]}! 🎀\n\n` +
+      `Aaishvy is turning 6 on April 19th and we would love to have you there to celebrate with us! 🎂🌟\n\n` +
+      `We built her a custom invite — just for the people who matter most to her — so you know this one came straight from the heart, not some app. 💕\n\n` +
+      `Tap below to open your personal invite. Her parents are watching the RSVPs come in live and Aaishvy is already excited to see who's joining her squad! 🥳\n\n` +
+      `🎖️ ${missionLink}\n\n` +
+      `Can't wait to celebrate with you! 🎤✨`;
+
 
     try {
       await client.sendMessage(chatId, message);
