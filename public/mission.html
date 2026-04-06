@@ -426,8 +426,8 @@
 
   <!-- Boot screen -->
   <div id="boot-screen">
-    <div class="boot-logo">AGENCY<br/>COMMAND</div>
-    <div class="boot-sub">// K-POP HUNTER UNIT — SECURE CHANNEL //</div>
+    <div class="boot-logo">HUNTER<br/>COMMAND</div>
+    <div class="boot-sub">// HUNTER UNIT — INCOMING TRANSMISSION //</div>
     <div id="boot-log"></div>
     <div class="boot-bar"><div class="boot-bar-fill" id="boot-bar-fill"></div></div>
   </div>
@@ -435,24 +435,24 @@
   <!-- Main content -->
   <div id="main-content">
     <div class="ticker-wrap">
-      <span class="ticker">⭐ OPERATION AAISHVY — APRIL 19TH 2026 &nbsp;⚡&nbsp; K-POP HUNTER UNIT — CONCORD SECTOR &nbsp;💜&nbsp; AGENCY COMMAND ACTIVE &nbsp;🌸&nbsp; CLASSIFIED TRANSMISSION &nbsp;⚡&nbsp; NEON PROTOCOL ENGAGED &nbsp;⭐&nbsp;</span>
+      <span class="ticker">⭐ THE HUNT: AAISHVY'S 6TH — APRIL 19TH 2026 &nbsp;⚡&nbsp; HUNTER UNIT — CONCORD BASE CAMP &nbsp;💜&nbsp; HUNTER COMMAND ACTIVE &nbsp;🌸&nbsp; HUNTER EYES ONLY &nbsp;⚡&nbsp; NEON PROTOCOL ENGAGED &nbsp;⭐&nbsp;</span>
     </div>
 
-    <div class="sys-tag">> SYSTEM_ONLINE // MISSION_BRIEFING_ACTIVE</div>
+    <div class="sys-tag">> HUNTER_UNIT_ONLINE // RALLY_BRIEF_ACTIVE</div>
     <div class="main-title">
-      <span class="title-glitch" data-text="OPERATION">OPERATION</span><br/>
-      <span class="title-glitch" data-text="AAISHVY">AAISHVY</span>
+      <span class="title-glitch" data-text="THE HUNT:">THE HUNT:</span><br/>
+      <span class="title-glitch" data-text="AAISHVY'S 6TH">AAISHVY'S 6TH</span>
     </div>
-    <div class="subtitle">BIRTHDAY DEPLOYMENT — CONCORD SECTOR HQ</div>
+    <div class="subtitle">HUNTER RALLY — CONCORD BASE CAMP</div>
 
     <div class="neon-divider"></div>
 
     <!-- Poster -->
     <div class="poster-outer">
       <div class="poster-inner">
-        <img src="/kpop-poster-2.jpeg" alt="Operation Aaishvy Mission Poster" />
+        <img src="/kpop-poster-2.jpeg" alt="Hunter Rally Mission Poster" />
         <div class="poster-overlay"></div>
-        <div class="poster-badge">⚡ CLASSIFIED // DO NOT SHARE</div>
+        <div class="poster-badge">⚡ HUNTER EYES ONLY</div>
         <div class="poster-badge2">█ LIVE BRIEFING</div>
       </div>
     </div>
@@ -460,15 +460,15 @@
     <!-- Stats -->
     <div class="stats-grid">
       <div class="stat-card c">
-        <div class="stat-label">📅 MISSION DATE</div>
+        <div class="stat-label">📅 HUNT DATE</div>
         <div class="stat-val">April 19, 2026</div>
       </div>
       <div class="stat-card p">
-        <div class="stat-label">⏰ DEPLOY TIME</div>
+        <div class="stat-label">⏰ RALLY TIME</div>
         <div class="stat-val">18:00 HRS EST</div>
       </div>
       <div class="stat-card g" style="grid-column:1/-1">
-        <div class="stat-label">📍 SECTOR COORDINATES</div>
+        <div class="stat-label">📍 BASE CAMP COORDINATES</div>
         <div class="stat-val">1555 Gossage Ln NW, Concord, NC 28027</div>
       </div>
       <div class="stat-card y" style="grid-column:1/-1">
@@ -479,10 +479,12 @@
 
     <!-- Briefing -->
     <div class="briefing">
-      <div class="briefing-name" id="guest-greeting">⚡ OPERATIVE — BRIEFING INCOMING</div>
+      <div class="briefing-name" id="guest-greeting">⚡ HUNTER — RALLY CALL INCOMING</div>
       <p>
-        You've been hand-selected for a <strong>CLASSIFIED MISSION</strong> — celebrating our little superstar <strong>AAISHVY</strong> as she levels up to <strong>AGE 6</strong>! 🎂🌟<br/><br/>
-        Her parents built this invite from scratch — <strong>just for you</strong> — and they're watching the RSVPs roll in live on their command dashboard right now. The squad is assembling. <strong>Will you join us?</strong>
+        Aaishvy is turning 6 and she's calling in her <strong>Hunter Squad!</strong> 🗡️🎂<br/><br/>
+        We hand-coded this invite just for you — using AI to craft something truly one-of-a-kind. Your own personal page, a chatbot to answer all your questions about the event, and a <strong>Hunter Badge</strong> with your name on it waiting once you RSVP.<br/><br/>
+        Because you're not just any guest — you're part of her squad.<br/><br/>
+        One mission. One squad. <strong>Are you in?</strong> ⚡
       </p>
     </div>
 
@@ -491,7 +493,7 @@
     <!-- RSVP Form -->
     <div class="rsvp-panel" id="rsvp-panel">
       <div class="panel-title">
-        <span class="blink">▶</span> CONFIRM DEPLOYMENT STATUS
+        <span class="blink">▶</span> CONFIRM HUNTER STATUS
       </div>
 
       <form id="rsvp-form" autocomplete="off">
@@ -514,11 +516,11 @@
 
         <div id="yes-fields">
           <div class="field-row">
-            <label class="field-lbl" for="squad">// SQUAD HEADCOUNT (including yourself)</label>
+            <label class="field-lbl" for="squad">// HUNTER HEADCOUNT (including yourself)</label>
             <input type="number" id="squad" name="squadCount" min="1" max="20" placeholder="e.g. 2" />
           </div>
           <div class="field-row">
-            <label class="field-lbl">// RATION SELECTION</label>
+            <label class="field-lbl">// HUNTER FUEL SELECTION</label>
             <div class="radio-row">
               <div class="r-opt">
                 <input type="radio" name="food" id="f-veg" value="VEG" />
@@ -540,20 +542,20 @@
           </div>
         </div>
 
-        <button type="submit" class="submit-btn" id="submit-btn">TRANSMIT TO COMMAND ▶</button>
+        <button type="submit" class="submit-btn" id="submit-btn">SEND TO HUNTER COMMAND ▶</button>
       </form>
     </div>
 
     <!-- Success -->
     <div id="success-screen">
       <div class="result-icon">🎖️</div>
-      <div class="result-title">ACCESS GRANTED</div>
+      <div class="result-title">HUNTER CONFIRMED</div>
       <div class="result-msg" id="success-msg">
-        Deployment confirmed. See you at Concord HQ on April 19th!
+        You're on the list! Report to Base Camp — April 19th at 6 PM EST! 🗡️
       </div>
       <div class="qr-wrap" id="qr-wrap" style="display:none">
-        <img id="qr-img" src="" alt="Access Badge" />
-        <div class="qr-lbl" id="qr-lbl">// YOUR ACCESS BADGE //</div>
+        <img id="qr-img" src="" alt="Hunter Badge" />
+        <div class="qr-lbl" id="qr-lbl">// YOUR HUNTER BADGE //</div>
       </div>
     </div>
 
@@ -561,7 +563,7 @@
     <div id="declined-screen">
       <div class="result-icon">💔</div>
       <div class="result-title">STANDING DOWN</div>
-      <div class="result-msg">We'll miss you, Operative.<br/>Aaishvy sends her love — maybe next mission! 💕</div>
+      <div class="result-msg">We'll miss you, Hunter.<br/>Aaishvy sends her love — maybe next hunt! 💕</div>
     </div>
   </div>
 
@@ -571,13 +573,13 @@
   <script>
   // ── BOOT SEQUENCE ──────────────────────────────────────────────────────────
   const BOOT_LINES = [
-    '> INITIALIZING AGENCY COMMAND PROTOCOL...',
-    '> LOADING K-POP HUNTER UNIT DATABASE...',
-    '> DECRYPTING MISSION BRIEFING...',
-    '> SCANNING OPERATIVE CLEARANCE...',
+    '> INITIALIZING HUNTER COMMAND PROTOCOL...',
+    '> LOADING HUNTER UNIT DATABASE...',
+    '> DECRYPTING RALLY BRIEF...',
+    '> SCANNING HUNTER CLEARANCE...',
     '> CALIBRATING NEON UPLINK...',
-    '> ESTABLISHING SECURE CHANNEL...',
-    '> ALL SYSTEMS ONLINE. BRIEFING READY.',
+    '> ESTABLISHING HUNTER CHANNEL...',
+    '> ALL HUNTERS ONLINE. RALLY BRIEF READY.',
   ];
   const bootLog = document.getElementById('boot-log');
   const bootFill = document.getElementById('boot-bar-fill');
@@ -697,7 +699,7 @@
   document.getElementById('guest-name-f').value = guestName;
 
   if (guestName && guestName.toLowerCase() !== 'guest') {
-    document.getElementById('guest-greeting').textContent = `⚡ OPERATIVE ${guestName.toUpperCase()} — BRIEFING INCOMING`;
+    document.getElementById('guest-greeting').textContent = `⚡ HUNTER ${guestName.toUpperCase()} — RALLY CALL INCOMING`;
     document.title = `Mission Briefing — ${guestName}`;
   }
 
@@ -724,7 +726,7 @@
         if (existing.notes) document.getElementById('notes').value = existing.notes;
         // Update button + add notice
         const btn = document.getElementById('submit-btn');
-        btn.textContent = 'UPDATE DEPLOYMENT';
+        btn.textContent = 'UPDATE HUNTER STATUS';
         const notice = document.createElement('div');
         notice.style.cssText = 'text-align:center;font-size:10px;letter-spacing:2px;color:var(--cyan);margin-bottom:12px;opacity:0.8;';
         notice.textContent = '▶ PREVIOUS RSVP DETECTED — UPDATE YOUR STATUS BELOW';
@@ -744,7 +746,7 @@
   document.getElementById('rsvp-form').addEventListener('submit', async e => {
     e.preventDefault();
     const btn = document.getElementById('submit-btn');
-    btn.textContent = 'TRANSMITTING...';
+    btn.textContent = 'SENDING TO COMMAND...';
     btn.disabled = true;
 
     const data = Object.fromEntries(new FormData(e.target).entries());
@@ -763,11 +765,11 @@
       if (data.status === 'ACCEPTED') {
         document.getElementById('success-screen').style.display = 'block';
         document.getElementById('success-msg').innerHTML =
-          `Squad of <strong>${data.squadCount}</strong> confirmed, Operative <strong>${guestName}</strong>! 🎉<br/>See you at Concord HQ — April 19th at 6 PM EST!`;
+          `Hunter squad of <strong>${data.squadCount}</strong> confirmed, <strong>${guestName}</strong>! 🗡️🎉<br/>Report to Base Camp — April 19th at 6 PM EST!`;
         if (result.qrCode) {
           document.getElementById('qr-img').src = result.qrCode;
           document.getElementById('qr-wrap').style.display = 'inline-block';
-          document.getElementById('qr-lbl').textContent = `// ACCESS BADGE — ${guestName.toUpperCase()} //`;
+          document.getElementById('qr-lbl').textContent = `// HUNTER BADGE — ${guestName.toUpperCase()} //`;
         }
       } else {
         document.getElementById('declined-screen').style.display = 'block';
@@ -897,7 +899,7 @@
   <!-- Chat panel -->
   <div id="chat-panel">
     <div class="chat-header">
-      <div class="chat-header-title">⚡ AGENCY COMMAND INTEL</div>
+      <div class="chat-header-title">⚡ HUNTER COMMAND INTEL</div>
       <div style="display:flex;align-items:center;gap:12px">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="chat-header-dot"></div>
@@ -910,7 +912,7 @@
     <div class="chat-msgs" id="chat-msgs">
       <div class="msg bot">
         <div class="msg-label">▶ AGENCY COMMAND</div>
-        Operative, I have full intel on this mission. Ask me anything or choose a query below. 🎖️
+        Hunter, your rally brief is ready. Ask me anything about the event or choose a query below. 🗡️
       </div>
     </div>
 
@@ -995,7 +997,7 @@
         appendMsg(data.answer, 'bot');
       } catch {
         hideTyping();
-        appendMsg("Transmission lost. Try again, Operative.", 'bot');
+        appendMsg("Signal lost. Try again, Hunter.", 'bot');
       }
     }
 
