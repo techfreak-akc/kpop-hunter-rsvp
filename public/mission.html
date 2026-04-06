@@ -786,12 +786,19 @@
       position: fixed; bottom: 24px; right: 24px; z-index: 100;
       width: 58px; height: 58px; border-radius: 50%;
       background: linear-gradient(135deg, var(--pink), var(--purple));
-      border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-      font-size: 24px; box-shadow: 0 0 20px rgba(255,0,110,0.5);
+      border: 2px solid rgba(0,245,255,0.4);
+      cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 1px;
+      box-shadow: 0 0 20px rgba(255,0,110,0.5);
       animation: chatPulse 2s ease-in-out infinite;
       transition: transform 0.2s;
     }
     #chat-toggle:hover { transform: scale(1.1); }
+    #chat-toggle-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 7px; letter-spacing: 1px; color: #fff; line-height: 1;
+    }
+    #chat-toggle-icon { font-size: 22px; line-height: 1; }
     @keyframes chatPulse { 0%,100%{box-shadow:0 0 20px rgba(255,0,110,0.5)} 50%{box-shadow:0 0 35px rgba(255,0,110,0.9),0 0 60px rgba(178,0,255,0.4)} }
 
     #chat-panel {
@@ -801,17 +808,19 @@
       border: 1px solid rgba(0,245,255,0.25);
       box-shadow: 0 0 40px rgba(0,245,255,0.1), 0 0 80px rgba(178,0,255,0.05);
       display: none; flex-direction: column;
-      max-height: min(500px, calc(100dvh - 120px));
+      height: min(520px, calc(100svh - 120px));
+      max-height: min(520px, calc(100svh - 120px));
       backdrop-filter: blur(20px);
     }
     #chat-panel.open { display: flex; }
     @media (max-width: 480px) {
       #chat-panel {
-        right: 12px; left: 12px; width: auto;
-        bottom: 86px;
-        max-height: calc(100dvh - 110px);
+        right: 10px; left: 10px; width: auto;
+        bottom: 80px;
+        height: calc(100svh - 100px);
+        max-height: calc(100svh - 100px);
       }
-      #chat-toggle { bottom: 16px; right: 16px; }
+      #chat-toggle { bottom: 16px; right: 16px; width: 54px; height: 54px; }
     }
 
     .chat-header {
@@ -864,17 +873,23 @@
     .typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
     @keyframes typingBounce { 0%,100%{transform:translateY(0);opacity:0.4} 50%{transform:translateY(-4px);opacity:1} }
 
-    .chat-suggestions {
-      padding: 10px 14px; border-top: 1px solid rgba(0,245,255,0.08);
-      display: flex; flex-wrap: wrap; gap: 6px;
+    #suggest-list {
+      display: none; flex-direction: column;
+      border-top: 1px solid rgba(0,245,255,0.08);
+      max-height: 160px; overflow-y: auto;
     }
-    .chip {
-      background: rgba(0,10,30,0.8); border: 1px solid rgba(0,245,255,0.2);
-      color: var(--cyan); font-size: 10px; letter-spacing: 1px;
-      padding: 5px 10px; cursor: pointer; font-family: 'Share Tech Mono', monospace;
-      transition: all 0.2s; white-space: nowrap;
+    #suggest-list.show { display: flex; }
+    .suggest-item {
+      padding: 9px 14px; cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; color: var(--cyan);
+      border-bottom: 1px solid rgba(0,245,255,0.05);
+      transition: background 0.15s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .chip:hover { border-color: var(--pink); color: var(--pink); background: rgba(255,0,110,0.05); }
+    .suggest-item:hover, .suggest-item.active {
+      background: rgba(0,245,255,0.07); color: #fff;
+    }
 
     .chat-input-row {
       display: flex; border-top: 1px solid rgba(0,245,255,0.12);
@@ -894,7 +909,10 @@
   </style>
 
   <!-- Toggle button -->
-  <button id="chat-toggle" title="Ask Agency Command">🤖</button>
+  <button id="chat-toggle" title="Ask Hunter Command AI">
+    <span id="chat-toggle-icon">⚡</span>
+    <span id="chat-toggle-label">ASK AI</span>
+  </button>
 
   <!-- Chat panel -->
   <div id="chat-panel">
@@ -916,17 +934,7 @@
       </div>
     </div>
 
-    <div class="chat-suggestions" id="chip-bar">
-      <div class="chip" onclick="askChip(this)">⏰ What time does it start?</div>
-      <div class="chip" onclick="askChip(this)">📍 Send location coordinates</div>
-      <div class="chip" onclick="askChip(this)">🚗 Is parking available?</div>
-      <div class="chip" onclick="askChip(this)">📋 What's the RSVP deadline?</div>
-      <div class="chip" onclick="askChip(this)">👗 Is there a dress code?</div>
-      <div class="chip" onclick="askChip(this)">👶 Are kids welcome?</div>
-      <div class="chip" onclick="askChip(this)">🎂 Will there be cake?</div>
-      <div class="chip" onclick="askChip(this)">🎤 What's the theme about?</div>
-      <div class="chip" onclick="askChip(this)">📱 Who do I contact if I'm late?</div>
-    </div>
+    <div id="suggest-list"></div>
 
     <div class="chat-input-row">
       <input type="text" id="chat-input" placeholder="Type your question..." maxlength="200" />
@@ -1001,12 +1009,75 @@
       }
     }
 
-    function askChip(el) {
-      ask(el.textContent.replace(/^[^\s]+\s/, '')); // strip emoji prefix
+    const SUGGESTIONS = [
+      '⏰ What time does it start?',
+      '📍 Send location coordinates',
+      '🚗 Is parking available?',
+      '📋 What\'s the RSVP deadline?',
+      '👗 Is there a dress code?',
+      '👶 Are kids welcome?',
+      '🎂 Will there be cake?',
+      '🎤 What\'s the theme about?',
+      '📱 Who do I contact if I\'m late?',
+      '👥 Can I bring a plus one?',
+      '🎁 Should I bring a gift?',
+      '🥗 Are there vegetarian options?',
+    ];
+
+    const suggestList = document.getElementById('suggest-list');
+    let activeIdx = -1;
+
+    function renderSuggestions(val) {
+      const q = val.trim().toLowerCase();
+      suggestList.innerHTML = '';
+      activeIdx = -1;
+      if (!q) { suggestList.classList.remove('show'); return; }
+      const matches = SUGGESTIONS.filter(s => s.toLowerCase().includes(q));
+      if (!matches.length) { suggestList.classList.remove('show'); return; }
+      matches.forEach((s, i) => {
+        const div = document.createElement('div');
+        div.className = 'suggest-item';
+        div.textContent = s;
+        div.addEventListener('mousedown', e => {
+          e.preventDefault();
+          ask(s.replace(/^[^\s]+\s/, ''));
+          chatInput.value = '';
+          suggestList.classList.remove('show');
+        });
+        suggestList.appendChild(div);
+      });
+      suggestList.classList.add('show');
     }
 
-    document.getElementById('chat-send').addEventListener('click', () => ask(chatInput.value));
-    chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') ask(chatInput.value); });
+    chatInput.addEventListener('input', () => renderSuggestions(chatInput.value));
+
+    chatInput.addEventListener('keydown', e => {
+      const items = suggestList.querySelectorAll('.suggest-item');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIdx = Math.min(activeIdx + 1, items.length - 1);
+        items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIdx = Math.max(activeIdx - 1, -1);
+        items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+      } else if (e.key === 'Enter') {
+        if (activeIdx >= 0 && items[activeIdx]) {
+          const text = items[activeIdx].textContent.replace(/^[^\s]+\s/, '');
+          ask(text); chatInput.value = ''; suggestList.classList.remove('show');
+        } else {
+          ask(chatInput.value); suggestList.classList.remove('show');
+        }
+      } else if (e.key === 'Escape') {
+        suggestList.classList.remove('show');
+      }
+    });
+
+    chatInput.addEventListener('blur', () => setTimeout(() => suggestList.classList.remove('show'), 150));
+
+    document.getElementById('chat-send').addEventListener('click', () => {
+      ask(chatInput.value); suggestList.classList.remove('show');
+    });
   </script>
 </body>
 </html>

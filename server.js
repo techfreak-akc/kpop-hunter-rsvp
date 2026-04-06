@@ -185,11 +185,11 @@ app.post('/api/intel', (req, res) => {
   if (!question) return res.json({ answer: "Agency Command awaiting your query." });
   const q = question.toLowerCase();
   let answer;
-  if (q.includes('start') || q.includes('begin') || (q.includes('time') && !q.includes('end'))) {
-    answer = "⏰ *Start Time:* The mission kicks off at **6:00 PM EST (18:00 hours)** on **April 19th, 2026**. Don't be late, Operative!";
-  } else if (q.includes('end') || q.includes('finish') || q.includes('over') || q.includes('long') || q.includes('hour') || q.includes('duration')) {
+  if (q.includes('start') || q.includes('begin') || q.includes('what time') || (q.includes('time') && !q.includes('end time'))) {
+    answer = "⏰ *Start Time:* The hunt kicks off at **6:00 PM EST (18:00 hours)** on **April 19th, 2026**. Don't be late, Hunter!";
+  } else if (q.includes('end time') || q.includes('finish') || q.includes('when does it end') || q.includes('duration') || q.includes('how long')) {
     answer = "🎉 *End Time:* There is **no fixed end time** — the party goes on! Come and stay as long as you like. 😄";
-  } else if (q.includes('venue') || q.includes('coordinat') || q.includes('map') || q.includes('address') || q.includes('direction') || q.includes('where') || q.includes('gps') || q.includes('location')) {
+  } else if (q.includes('venue') || q.includes('coordinat') || q.includes('map') || q.includes('address') || q.includes('direction') || q.includes('where') || q.includes('gps') || q.includes('location') || q.includes('send loc')) {
     answer = "📍 *Venue:* The Hunter's Home\n**1555 Gossage Ln NW, Concord, NC 28027**\n\n🗺️ https://maps.google.com/?q=1555+Gossage+Ln+NW+Concord+NC+28027";
   } else if (q.includes('park') || q.includes('car') || q.includes('drive')) {
     answer = "🚗 *Parking:* Ample street parking is available right outside — no codes, no hassle!";
