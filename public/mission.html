@@ -524,6 +524,23 @@
             <input type="number" id="kids" name="kids" min="0" max="20" placeholder="e.g. 1" />
           </div>
           <div class="field-row">
+            <label class="field-lbl">// FOOD PREFERENCE</label>
+            <div class="radio-row">
+              <div class="r-opt">
+                <input type="radio" name="food" id="f-veg" value="VEG" />
+                <label for="f-veg">🥦 VEG</label>
+              </div>
+              <div class="r-opt">
+                <input type="radio" name="food" id="f-nv" value="NON-VEG" />
+                <label for="f-nv">🍗 NON-VEG</label>
+              </div>
+              <div class="r-opt">
+                <input type="radio" name="food" id="f-both" value="BOTH" />
+                <label for="f-both">🍽️ BOTH</label>
+              </div>
+            </div>
+          </div>
+          <div class="field-row">
             <label class="field-lbl" for="notes">// ANYTHING WE SHOULD KNOW? (optional)</label>
             <input type="text" id="notes" name="notes" placeholder="Any notes for the hosts..." />
           </div>
@@ -705,6 +722,11 @@
         // Pre-fill adults/kids
         if (existing.adults) document.getElementById('adults').value = existing.adults;
         if (existing.kids) document.getElementById('kids').value = existing.kids;
+        // Pre-fill food
+        if (existing.food) {
+          const foodInput = document.querySelector(`input[name="food"][value="${existing.food}"]`);
+          if (foodInput) foodInput.checked = true;
+        }
         // Pre-fill notes
         if (existing.notes) document.getElementById('notes').value = existing.notes;
         // Update button + add notice

@@ -46,6 +46,7 @@
                                 <th class="p-3">Status</th>
                                 <th class="p-3">Adults</th>
                                 <th class="p-3">Kids</th>
+                                <th class="p-3">Food</th>
                                 <th class="p-3">Notes</th>
                                 <th class="p-3">Timestamp</th>
                             </tr>
@@ -96,11 +97,13 @@
                     const statusColor = rsvp.status === 'ACCEPTED' ? 'text-green-400 font-bold' : (rsvp.status === 'DECLINED' ? 'text-red-400 font-bold' : 'text-gray-400');
                     const adultsBadge = rsvp.adults ? `<span class="bg-cyan-900/40 text-cyan-300 px-2 py-0.5 rounded text-xs">${rsvp.adults} 🧑</span>` : '<span class="opacity-30">—</span>';
                     const kidsBadge = rsvp.kids ? `<span class="bg-purple-900/40 text-purple-300 px-2 py-0.5 rounded text-xs">${rsvp.kids} 👧</span>` : '<span class="opacity-30">—</span>';
+                    const foodBadge = rsvp.food ? `<span class="bg-green-900/40 text-green-300 px-2 py-0.5 rounded text-xs">${rsvp.food}</span>` : '<span class="opacity-30">—</span>';
                     row.innerHTML = `
                         <td class="p-3 text-pink-400 font-semibold">${rsvp.name || 'UNKNOWN'}</td>
                         <td class="p-3 ${statusColor}">${rsvp.status}</td>
                         <td class="p-3">${adultsBadge}</td>
                         <td class="p-3">${kidsBadge}</td>
+                        <td class="p-3">${foodBadge}</td>
                         <td class="p-3 opacity-50 text-xs">${rsvp.notes || '—'}</td>
                         <td class="p-3 opacity-40 text-xs">${new Date(rsvp.timestamp).toLocaleString()}</td>
                     `;
@@ -113,7 +116,7 @@
         document.getElementById('export-btn').addEventListener('click', () => {
             if(allData.length === 0) return alert("Manifest is empty.");
             const headers = "Operative,Phone,Status,Squad Count,Food,Notes,Timestamp\n";
-            const csv = allData.map(r => `${r.name||'UNKNOWN'},${r.phone},${r.status},${r.adults||''},${r.kids||''},${r.notes||''},${new Date(r.timestamp).toLocaleString()}`).join('\n');
+            const csv = allData.map(r => `${r.name||'UNKNOWN'},${r.phone},${r.status},${r.adults||''},${r.kids||''},${r.food||''},${r.notes||''},${new Date(r.timestamp).toLocaleString()}`).join('\n');
             const blob = new Blob([headers + csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');

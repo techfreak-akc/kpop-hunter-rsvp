@@ -157,10 +157,10 @@ app.get('/mission/:guestName', (req, res) => {
 
 // Handle web RSVP form submission
 app.post('/submit-rsvp', async (req, res) => {
-  const { name, phone, status, adults, kids, notes } = req.body;
+  const { name, phone, status, adults, kids, food, notes } = req.body;
   const QRCode = require('qrcode');
 
-  saveRsvp(phone || 'web', name || 'Guest', status, { adults, kids, notes });
+  saveRsvp(phone || 'web', name || 'Guest', status, { adults, kids, food, notes });
 
   let qrCode = null;
   if (status === 'ACCEPTED') {
