@@ -170,8 +170,40 @@ app.post('/submit-rsvp', async (req, res) => {
   res.json({ ok: true, qrCode });
 });
 
+// AI Intel Agent endpoint
+app.post('/api/intel', (req, res) => {
+  const { question } = req.body;
+  if (!question) return res.json({ answer: "Agency Command awaiting your query." });
+  const q = question.toLowerCase();
+  let answer;
+  if (q.includes('dress') || q.includes('wear') || q.includes('outfit') || q.includes('code')) {
+    answer = "👗 *Dress Code:* K-pop Neon Squad! Think neon colors, sparkly outfits, K-pop star vibes. Not strictly mandatory but **highly encouraged**. Come ready to shine! ✨";
+  } else if (q.includes('park') || q.includes('car') || q.includes('drive')) {
+    answer = "🚗 *Parking:* Free on-site parking is available at **1555 Gossage Ln NW**. Street parking also available nearby — no codes required!";
+  } else if (q.includes('coordinat') || q.includes('map') || q.includes('address') || q.includes('direction') || q.includes('where') || q.includes('gps') || q.includes('location')) {
+    answer = "📍 *Sector Coordinates:*\n**1555 Gossage Ln NW, Concord, NC 28027**\n\n🗺️ Open Google Maps: https://maps.google.com/?q=1555+Gossage+Ln+NW+Concord+NC+28027";
+  } else if (q.includes('gift') || q.includes('bring') || q.includes('present')) {
+    answer = "🎁 *Gifts:* No gifts required! If you insist, Aaishvy loves **art supplies, K-pop merch, or books**. Your presence is the best gift! 💕";
+  } else if (q.includes('food') || q.includes('eat') || q.includes('allerg') || q.includes('veg') || q.includes('diet')) {
+    answer = "🍽️ *Food:* Plenty of food for everyone! Nut-free, dairy-free, and gluten-free options available. Log dietary needs in your RSVP!";
+  } else if (q.includes('kid') || q.includes('child') || q.includes('baby') || q.includes('family')) {
+    answer = "👶 *Kids Welcome:* 100% kid-friendly event! Bring the whole squad — the more the merrier! 🎉";
+  } else if (q.includes('when') || q.includes('time') || q.includes('start') || q.includes('end') || q.includes('long') || q.includes('hour')) {
+    answer = "⏰ *Mission Clock:* Party starts **6:00 PM EST** on **April 19th, 2026** and runs until ~**9:00 PM EST**.";
+  } else if (q.includes('rsvp') || q.includes('deadline') || q.includes('last day')) {
+    answer = "📋 *RSVP Deadline:* Please confirm by **April 15th** so we can plan food and seating. Use the form above!";
+  } else if (q.includes('contact') || q.includes('arun') || q.includes('reach') || q.includes('call')) {
+    answer = "📱 *Contact:* Reach out to **Arun** directly via WhatsApp for any urgent mission questions! 🎖️";
+  } else if (q.includes('theme') || q.includes('kpop') || q.includes('k-pop')) {
+    answer = "🎤 *Theme:* K-pop Neon Squad — bright colors, neon lights, sparkles, and all the energy! 💜⚡";
+  } else {
+    answer = "🤖 *Agency Command:* Solid query, Operative. For this specific intel, contact Arun directly via WhatsApp — full clearance granted! 🎖️";
+  }
+  res.json({ answer });
+});
 
 async function sendWhatsAppMessage(to, text) {
+
   const payload = {
     messaging_product: "whatsapp",
     to: to,
