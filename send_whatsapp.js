@@ -28,7 +28,7 @@ const client = new Client({
   puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] }
 });
 
-console.log('\n[AGENCY COMMAND] Initializing WhatsApp connection...\n');
+console.log('\n[HUNTER COMMAND] Initializing WhatsApp connection...\n');
 
 client.on('qr', (qr) => {
   console.log('[ACTION REQUIRED] Scan this QR code with your WhatsApp:\n');
@@ -46,12 +46,12 @@ client.on('ready', async () => {
     const missionLink = `${BASE_URL}/mission/${encodedName}?phone=${phone}`;
 
     const message =
-      `Hey ${guest.name.split(' ')[0]}! 🎀\n\n` +
-      `Aaishvy is turning 6 on April 19th and we would love to have you there to celebrate with us! 🎂🌟\n\n` +
-      `We built her a custom invite — just for the people who matter most to her — so you know this one came straight from the heart, not some app. 💕\n\n` +
-      `Tap below to open your personal invite. Her parents are watching the RSVPs come in live and Aaishvy is already excited to see who's joining her squad! 🥳\n\n` +
-      `🎖️ ${missionLink}\n\n` +
-      `Can't wait to celebrate with you! 🎤✨`;
+      `Hey ${guest.name.split(' ')[0]}! 🗡️\n\n` +
+      `Aaishvy is turning 6 and she's calling in her Hunter Squad! 🎂⚡\n\n` +
+      `We hand-coded this invite just for you — using AI to craft something truly one-of-a-kind. Your own personal page, a chatbot to answer all your questions about the event, and a Hunter Badge with your name on it waiting once you RSVP. 🏅\n\n` +
+      `Because you're not just any guest — you're part of her squad. 💕\n\n` +
+      `👇 Open your personal invite below:\n${missionLink}\n\n` +
+      `One mission. One squad. Are you in? ⚡`;
 
 
     try {
