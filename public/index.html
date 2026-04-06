@@ -43,8 +43,10 @@
                         <thead>
                             <tr class="text-cyan-600 border-b border-cyan-900/50 text-sm uppercase">
                                 <th class="p-3">Operative</th>
-                                <th class="p-3">COM ID (Phone)</th>
                                 <th class="p-3">Status</th>
+                                <th class="p-3">Squad</th>
+                                <th class="p-3">Rations</th>
+                                <th class="p-3">Notes</th>
                                 <th class="p-3">Timestamp</th>
                             </tr>
                         </thead>
@@ -84,21 +86,23 @@
             );
 
             if (filteredData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500 italic">Awaiting incoming signals...</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500 italic">Awaiting incoming signals...</td></tr>';
                     return;
                 }
 
                 filteredData.forEach(rsvp => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-cyan-900/20 transition-colors';
-                    
                     const statusColor = rsvp.status === 'ACCEPTED' ? 'text-green-400 font-bold' : (rsvp.status === 'DECLINED' ? 'text-red-400 font-bold' : 'text-gray-400');
-                    
+                    const squadBadge = rsvp.squadCount ? `<span class="bg-cyan-900/40 text-cyan-300 px-2 py-0.5 rounded text-xs">${rsvp.squadCount} 👤</span>` : '<span class="opacity-30">—</span>';
+                    const foodBadge = rsvp.food ? `<span class="bg-purple-900/40 text-purple-300 px-2 py-0.5 rounded text-xs">${rsvp.food}</span>` : '<span class="opacity-30">—</span>';
                     row.innerHTML = `
                         <td class="p-3 text-pink-400 font-semibold">${rsvp.name || 'UNKNOWN'}</td>
-                        <td class="p-3 opacity-70">${rsvp.phone}</td>
                         <td class="p-3 ${statusColor}">${rsvp.status}</td>
-                        <td class="p-3 opacity-50 text-sm">${new Date(rsvp.timestamp).toLocaleString()}</td>
+                        <td class="p-3">${squadBadge}</td>
+                        <td class="p-3">${foodBadge}</td>
+                        <td class="p-3 opacity-50 text-xs">${rsvp.notes || '—'}</td>
+                        <td class="p-3 opacity-40 text-xs">${new Date(rsvp.timestamp).toLocaleString()}</td>
                     `;
                     tbody.appendChild(row);
             });
@@ -108,8 +112,8 @@
 
         document.getElementById('export-btn').addEventListener('click', () => {
             if(allData.length === 0) return alert("Manifest is empty.");
-            const headers = "Operative,COM ID,Status,Timestamp\n";
-            const csv = allData.map(r => `${r.name || 'UNKNOWN'},${r.phone},${r.status},${new Date(r.timestamp).toLocaleString()}`).join('\n');
+            const headers = "Operative,Phone,Status,Squad Count,Food,Notes,Timestamp\n";
+            const csv = allData.map(r => `${r.name||'UNKNOWN'},${r.phone},${r.status},${r.squadCount||''},${r.food||''},${r.notes||''},${new Date(r.timestamp).toLocaleString()}`).join('\n');
             const blob = new Blob([headers + csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
