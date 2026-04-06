@@ -701,6 +701,38 @@
     document.title = `Mission Briefing — ${guestName}`;
   }
 
+  // ── PRE-FILL EXISTING RSVP ────────────────────────────────────────────────
+  if (guestPhone) {
+    fetch(`/api/rsvp/${guestPhone}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(existing => {
+        if (!existing) return;
+        // Pre-fill status
+        const statusInput = document.querySelector(`input[name="status"][value="${existing.status}"]`);
+        if (statusInput) {
+          statusInput.checked = true;
+          document.getElementById('yes-fields').style.display = existing.status === 'ACCEPTED' ? 'block' : 'none';
+        }
+        // Pre-fill squad count
+        if (existing.squadCount) document.getElementById('squad').value = existing.squadCount;
+        // Pre-fill food
+        if (existing.food) {
+          const foodInput = document.querySelector(`input[name="food"][value="${existing.food}"]`);
+          if (foodInput) foodInput.checked = true;
+        }
+        // Pre-fill notes
+        if (existing.notes) document.getElementById('notes').value = existing.notes;
+        // Update button + add notice
+        const btn = document.getElementById('submit-btn');
+        btn.textContent = 'UPDATE DEPLOYMENT';
+        const notice = document.createElement('div');
+        notice.style.cssText = 'text-align:center;font-size:10px;letter-spacing:2px;color:var(--cyan);margin-bottom:12px;opacity:0.8;';
+        notice.textContent = '▶ PREVIOUS RSVP DETECTED — UPDATE YOUR STATUS BELOW';
+        btn.parentNode.insertBefore(notice, btn);
+      })
+      .catch(() => {});
+  }
+
   // ── FORM LOGIC ─────────────────────────────────────────────────────────────
   document.querySelectorAll('input[name="status"]').forEach(r => {
     r.addEventListener('change', () => {
@@ -767,10 +799,18 @@
       border: 1px solid rgba(0,245,255,0.25);
       box-shadow: 0 0 40px rgba(0,245,255,0.1), 0 0 80px rgba(178,0,255,0.05);
       display: none; flex-direction: column;
-      max-height: 500px;
+      max-height: min(500px, calc(100dvh - 120px));
       backdrop-filter: blur(20px);
     }
     #chat-panel.open { display: flex; }
+    @media (max-width: 480px) {
+      #chat-panel {
+        right: 12px; left: 12px; width: auto;
+        bottom: 86px;
+        max-height: calc(100dvh - 110px);
+      }
+      #chat-toggle { bottom: 16px; right: 16px; }
+    }
 
     .chat-header {
       padding: 14px 16px;
@@ -858,9 +898,12 @@
   <div id="chat-panel">
     <div class="chat-header">
       <div class="chat-header-title">⚡ AGENCY COMMAND INTEL</div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="chat-header-dot"></div>
-        <span style="font-size:9px;color:var(--green);letter-spacing:1px">ONLINE</span>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="chat-header-dot"></div>
+          <span style="font-size:9px;color:var(--green);letter-spacing:1px">ONLINE</span>
+        </div>
+        <button id="chat-close" onclick="document.getElementById('chat-panel').classList.remove('open')" style="background:none;border:none;color:rgba(0,245,255,0.5);font-size:18px;cursor:pointer;padding:0;line-height:1;transition:color 0.2s;" title="Close">✕</button>
       </div>
     </div>
 
@@ -872,14 +915,15 @@
     </div>
 
     <div class="chat-suggestions" id="chip-bar">
-      <div class="chip" onclick="askChip(this)">👗 Is dress code mandatory?</div>
-      <div class="chip" onclick="askChip(this)">🚗 Is parking available?</div>
+      <div class="chip" onclick="askChip(this)">⏰ What time does it start?</div>
       <div class="chip" onclick="askChip(this)">📍 Send location coordinates</div>
-      <div class="chip" onclick="askChip(this)">🎁 Should I bring a gift?</div>
-      <div class="chip" onclick="askChip(this)">👶 Are kids welcome?</div>
-      <div class="chip" onclick="askChip(this)">🍽️ Any food allergies info?</div>
-      <div class="chip" onclick="askChip(this)">⏰ What time does it end?</div>
+      <div class="chip" onclick="askChip(this)">🚗 Is parking available?</div>
       <div class="chip" onclick="askChip(this)">📋 What's the RSVP deadline?</div>
+      <div class="chip" onclick="askChip(this)">👗 Is there a dress code?</div>
+      <div class="chip" onclick="askChip(this)">👶 Are kids welcome?</div>
+      <div class="chip" onclick="askChip(this)">🎂 Will there be cake?</div>
+      <div class="chip" onclick="askChip(this)">🎤 What's the theme about?</div>
+      <div class="chip" onclick="askChip(this)">📱 Who do I contact if I'm late?</div>
     </div>
 
     <div class="chat-input-row">

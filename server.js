@@ -130,6 +130,15 @@ function saveRsvp(phone, name, status, extra = {}) {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
+// Fetch a single RSVP by phone
+app.get('/api/rsvp/:phone', (req, res) => {
+  const filePath = path.join(__dirname, 'rsvps.json');
+  const data = fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath)) : [];
+  const record = data.find(r => r.phone === req.params.phone);
+  if (record) res.json(record);
+  else res.status(404).json({ error: 'Not found' });
+});
+
 // Fetch all RSVPs for dashboard
 app.get('/api/rsvps', (req, res) => {
   const filePath = path.join(__dirname, 'rsvps.json');
@@ -176,28 +185,36 @@ app.post('/api/intel', (req, res) => {
   if (!question) return res.json({ answer: "Agency Command awaiting your query." });
   const q = question.toLowerCase();
   let answer;
-  if (q.includes('dress') || q.includes('wear') || q.includes('outfit') || q.includes('code')) {
-    answer = "👗 *Dress Code:* K-pop Neon Squad! Think neon colors, sparkly outfits, K-pop star vibes. Not strictly mandatory but **highly encouraged**. Come ready to shine! ✨";
+  if (q.includes('start') || q.includes('begin') || (q.includes('time') && !q.includes('end'))) {
+    answer = "⏰ *Start Time:* The mission kicks off at **6:00 PM EST (18:00 hours)** on **April 19th, 2026**. Don't be late, Operative!";
+  } else if (q.includes('end') || q.includes('finish') || q.includes('over') || q.includes('long') || q.includes('hour') || q.includes('duration')) {
+    answer = "🎉 *End Time:* There is **no fixed end time** — the party goes on! Come and stay as long as you like. 😄";
+  } else if (q.includes('venue') || q.includes('coordinat') || q.includes('map') || q.includes('address') || q.includes('direction') || q.includes('where') || q.includes('gps') || q.includes('location')) {
+    answer = "📍 *Venue:* The Hunter's Home\n**1555 Gossage Ln NW, Concord, NC 28027**\n\n🗺️ https://maps.google.com/?q=1555+Gossage+Ln+NW+Concord+NC+28027";
   } else if (q.includes('park') || q.includes('car') || q.includes('drive')) {
-    answer = "🚗 *Parking:* Free on-site parking is available at **1555 Gossage Ln NW**. Street parking also available nearby — no codes required!";
-  } else if (q.includes('coordinat') || q.includes('map') || q.includes('address') || q.includes('direction') || q.includes('where') || q.includes('gps') || q.includes('location')) {
-    answer = "📍 *Sector Coordinates:*\n**1555 Gossage Ln NW, Concord, NC 28027**\n\n🗺️ Open Google Maps: https://maps.google.com/?q=1555+Gossage+Ln+NW+Concord+NC+28027";
-  } else if (q.includes('gift') || q.includes('bring') || q.includes('present')) {
-    answer = "🎁 *Gifts:* No gifts required! If you insist, Aaishvy loves **art supplies, K-pop merch, or books**. Your presence is the best gift! 💕";
-  } else if (q.includes('food') || q.includes('eat') || q.includes('allerg') || q.includes('veg') || q.includes('diet')) {
-    answer = "🍽️ *Food:* Plenty of food for everyone! Nut-free, dairy-free, and gluten-free options available. Log dietary needs in your RSVP!";
-  } else if (q.includes('kid') || q.includes('child') || q.includes('baby') || q.includes('family')) {
-    answer = "👶 *Kids Welcome:* 100% kid-friendly event! Bring the whole squad — the more the merrier! 🎉";
-  } else if (q.includes('when') || q.includes('time') || q.includes('start') || q.includes('end') || q.includes('long') || q.includes('hour')) {
-    answer = "⏰ *Mission Clock:* Party starts **6:00 PM EST** on **April 19th, 2026** and runs until ~**9:00 PM EST**.";
-  } else if (q.includes('rsvp') || q.includes('deadline') || q.includes('last day')) {
-    answer = "📋 *RSVP Deadline:* Please confirm by **April 15th** so we can plan food and seating. Use the form above!";
-  } else if (q.includes('contact') || q.includes('arun') || q.includes('reach') || q.includes('call')) {
-    answer = "📱 *Contact:* Reach out to **Arun** directly via WhatsApp for any urgent mission questions! 🎖️";
-  } else if (q.includes('theme') || q.includes('kpop') || q.includes('k-pop')) {
-    answer = "🎤 *Theme:* K-pop Neon Squad — bright colors, neon lights, sparkles, and all the energy! 💜⚡";
+    answer = "🚗 *Parking:* Ample street parking is available right outside — no codes, no hassle!";
+  } else if (q.includes('rsvp') || q.includes('deadline') || q.includes('last day') || q.includes('confirm') || q.includes('cancel') || q.includes('update')) {
+    answer = "📋 *RSVP Deadline:* Please confirm by **April 16th, 2026**.\n\nNeed to cancel or update? Use the **same RSVP link** you received to update your status.";
+  } else if (q.includes('plus one') || q.includes('guest') || q.includes('bring') && q.includes('friend') || q.includes('extra')) {
+    answer = "👥 *Plus Ones:* Absolutely — bring as many guests as you like! The more the merrier! 🎉";
+  } else if (q.includes('kid') || q.includes('child') || q.includes('baby') || q.includes('toddler') || q.includes('family')) {
+    answer = "👶 *Kids:* 100% kid-friendly event! Bring everyone — all ages welcome! 🎉";
+  } else if (q.includes('dress') || q.includes('wear') || q.includes('outfit') || q.includes('code') || q.includes('cloth')) {
+    answer = "👗 *Dress Code:* Anything comfortable, **neon, or sparkly**! This goes for kids too. Come ready to shine! ✨";
+  } else if (q.includes('veg') || q.includes('food') || q.includes('eat') || q.includes('diet') || q.includes('meal')) {
+    answer = "🥗 *Food:* Yes! Vegetarian options will be available. There's something for everyone!";
+  } else if (q.includes('cake') || q.includes('dessert') || q.includes('sweet')) {
+    answer = "🎂 *Cake:* Yes — there WILL be a birthday cake! 🎉 Aaishvy approved.";
+  } else if (q.includes('theme') || q.includes('kpop') || q.includes('k-pop') || q.includes('demon') || q.includes('hunter') || q.includes('netflix')) {
+    answer = "🎤 *Theme:* K-pop Demon Hunters! It's Aaishvy's current obsession — she loves watching the show and pretending to be a Hunter from the popular **Netflix Demon Hunters** series. Neon, fierce, and full of energy! ⚡";
+  } else if (q.includes('contact') || q.includes('late') || q.includes('reach') || q.includes('call') || q.includes('arun')) {
+    answer = "📱 *Contact:* Running late or have questions? Reach out to Aaishvy's father — **Arun Cholleti** directly via WhatsApp. 🎖️";
+  } else if (q.includes('host') || q.includes('who') || q.includes('parent') || q.includes('organiz')) {
+    answer = "🏠 *Hosts:* The party is hosted by **Arun Cholleti** and **Neeraja Cholleti** — Aaishvy's proud parents! 💕";
+  } else if (q.includes('gift') || q.includes('present') || q.includes('registry')) {
+    answer = "🎁 *Gifts:* Your presence is the best gift! No registry. If you'd like to bring something, Aaishvy loves art supplies, K-pop merch, or books. 💕";
   } else {
-    answer = "🤖 *Agency Command:* Solid query, Operative. For this specific intel, contact Arun directly via WhatsApp — full clearance granted! 🎖️";
+    answer = "🤖 *Agency Command:* Solid query, Operative. For this specific intel, contact **Arun Cholleti** directly via WhatsApp — full clearance granted! 🎖️";
   }
   res.json({ answer });
 });
