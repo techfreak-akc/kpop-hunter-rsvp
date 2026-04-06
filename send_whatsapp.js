@@ -2,7 +2,7 @@ require('dotenv').config();
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 
-const BASE_URL = process.env.BASE_URL || 'https://kpop-hunter-rsvp.onrender.com';
+const BASE_URL = process.env.BASE_URL || 'https://aaishvy-bday-rsvp.onrender.com';
 
 // Guest list: add as many as you want!
 // Format: { name: 'First Last', phone: '1XXXXXXXXXX' }
