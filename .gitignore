@@ -4,3 +4,5 @@ node_modules
 server.log
 ngrok.log
 lt.log
+.wwebjs_auth
+.wwebjs_cache
