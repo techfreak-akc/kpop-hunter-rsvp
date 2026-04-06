@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mission Briefing — Aaishvy's Birthday</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --neon-cyan: #00f5ff;
+      --neon-pink: #ff006e;
+      --neon-purple: #8b00ff;
+      --neon-green: #00ff88;
+      --dark-bg: #020010;
+      --panel-bg: rgba(0, 10, 30, 0.85);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--dark-bg);
+      color: #cdd6f4;
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridScroll 20s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes gridScroll {
+      0% { background-position: 0 0; }
+      100% { background-position: 40px 40px; }
+    }
+
+    /* Scanlines */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 20px 16px 60px;
+    }
+
+    /* Top scan bar */
+    .scan-bar {
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-pink), transparent);
+      margin-bottom: 28px;
+      animation: scanPulse 3s ease-in-out infinite;
+    }
+    @keyframes scanPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+    .terminal-header {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--neon-green);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    .system-tag {
+      display: inline-block;
+      background: var(--neon-pink);
+      color: #000;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 8px;
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+    }
+
+    /* Main title */
+    .title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(22px, 6vw, 40px);
+      font-weight: 900;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px rgba(0,245,255,0.4);
+      line-height: 1.2;
+      margin-bottom: 6px;
+      animation: glitch 8s infinite;
+    }
+    @keyframes glitch {
+      0%,95%,100%{text-shadow:0 0 20px var(--neon-cyan),0 0 40px rgba(0,245,255,0.4)}
+      96%{text-shadow:-2px 0 var(--neon-pink),2px 0 var(--neon-cyan)}
+      97%{text-shadow:2px 0 var(--neon-pink),-2px 0 var(--neon-cyan)}
+      98%{text-shadow:0 0 20px var(--neon-cyan),0 0 40px rgba(0,245,255,0.4)}
+    }
+
+    .subtitle {
+      color: var(--neon-pink);
+      font-size: 13px;
+      letter-spacing: 4px;
+      margin-bottom: 28px;
+      text-shadow: 0 0 10px var(--neon-pink);
+    }
+
+    /* Poster */
+    .poster-frame {
+      position: relative;
+      border: 1px solid var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0,245,255,0.2), inset 0 0 20px rgba(0,245,255,0.05);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .poster-frame::before {
+      content: 'CLASSIFIED: MISSION POSTER';
+      position: absolute;
+      top: 8px; left: 12px;
+      font-size: 9px;
+      color: var(--neon-green);
+      letter-spacing: 2px;
+      z-index: 3;
+    }
+    .poster-frame img {
+      width: 100%;
+      display: block;
+      filter: saturate(1.3) contrast(1.05);
+    }
+
+    /* Info grid */
+    .intel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .intel-item {
+      background: var(--panel-bg);
+      border: 1px solid rgba(0,245,255,0.2);
+      padding: 14px;
+      position: relative;
+    }
+    .intel-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--neon-cyan);
+    }
+    .intel-label {
+      font-size: 9px;
+      color: var(--neon-cyan);
+      letter-spacing: 3px;
+      margin-bottom: 6px;
+    }
+    .intel-value {
+      font-size: 13px;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* Welcome message */
+    .briefing-box {
+      background: var(--panel-bg);
+      border: 1px solid rgba(255,0,110,0.3);
+      border-left: 3px solid var(--neon-pink);
+      padding: 18px;
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .briefing-box .intro-name {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-pink);
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px var(--neon-pink);
+    }
+    .briefing-box p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #cbd5e1;
+    }
+
+    /* Form */
+    .rsvp-form {
+      background: var(--panel-bg);
+      border: 1px solid rgba(0,245,255,0.15);
+      padding: 24px;
+    }
+    .form-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      color: var(--neon-green);
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .form-title::before {
+      content: '▶';
+      color: var(--neon-pink);
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .field-group { margin-bottom: 18px; }
+    .field-label {
+      display: block;
+      font-size: 10px;
+      color: var(--neon-cyan);
+      letter-spacing: 3px;
+      margin-bottom: 8px;
+    }
+
+    select, input[type="number"], input[type="text"] {
+      width: 100%;
+      background: rgba(0,0,20,0.8);
+      border: 1px solid rgba(0,245,255,0.3);
+      color: #fff;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+    }
+    select:focus, input:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0,245,255,0.2);
+    }
+
+    /* Radio buttons for RSVP */
+    .radio-group {
+      display: flex;
+      gap: 12px;
+    }
+    .radio-option {
+      flex: 1;
+      position: relative;
+    }
+    .radio-option input { display: none; }
+    .radio-option label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+      border: 1px solid rgba(0,245,255,0.2);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+      letter-spacing: 1px;
+    }
+    .radio-option input:checked + label {
+      border-color: var(--neon-pink);
+      background: rgba(255,0,110,0.1);
+      color: var(--neon-pink);
+      box-shadow: 0 0 12px rgba(255,0,110,0.2);
+    }
+    .radio-option label:hover {
+      border-color: var(--neon-cyan);
+      background: rgba(0,245,255,0.05);
+    }
+
+    /* Food radio group */
+    .food-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    /* Submit button */
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: transparent;
+      border: 2px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--neon-cyan);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+      z-index: -1;
+    }
+    .submit-btn:hover {
+      color: #000;
+      box-shadow: 0 0 25px rgba(0,245,255,0.5);
+    }
+    .submit-btn:hover::before { transform: scaleX(1); }
+
+    .submit-btn.declined {
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+      margin-top: 12px;
+      font-size: 12px;
+      padding: 10px;
+      opacity: 0.7;
+    }
+    .submit-btn.declined:hover {
+      color: #000;
+      box-shadow: 0 0 25px rgba(255,0,110,0.3);
+    }
+    .submit-btn.declined::before { background: var(--neon-pink); }
+
+    /* Success screen */
+    #success-screen {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--panel-bg);
+      border: 1px solid var(--neon-green);
+      box-shadow: 0 0 40px rgba(0,255,136,0.15);
+    }
+    .success-icon {
+      font-size: 50px;
+      margin-bottom: 16px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    .success-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      color: var(--neon-green);
+      text-shadow: 0 0 20px var(--neon-green);
+      margin-bottom: 10px;
+      letter-spacing: 3px;
+    }
+    .success-msg { color: #94a3b8; font-size: 14px; line-height: 1.7; margin-bottom: 20px; }
+    .qr-container img { max-width: 200px; border: 2px solid var(--neon-green); padding: 10px; background: #fff; }
+    .qr-label { font-size: 10px; color: var(--neon-green); letter-spacing: 3px; margin-top: 10px; }
+
+    /* Declined screen */
+    #declined-screen {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--panel-bg);
+      border: 1px solid var(--neon-pink);
+    }
+    .declined-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      color: var(--neon-pink);
+      margin-bottom: 10px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 36px;
+      font-size: 10px;
+      color: rgba(0,245,255,0.3);
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="scan-bar"></div>
+    <div class="terminal-header">> AGENCY_COMMAND.SYS // SECURE CHANNEL ACTIVE</div>
+    <div class="system-tag">CLASSIFIED — MISSION BRIEFING</div>
+
+    <div class="title">OPERATION AAISHVY</div>
+    <div class="subtitle">BIRTHDAY DEPLOYMENT — APRIL 19TH</div>
+
+    <div class="poster-frame">
+      <img src="/kpop-poster-2.jpeg" alt="Aaishvy Birthday Poster" />
+    </div>
+
+    <div class="intel-grid">
+      <div class="intel-item">
+        <div class="intel-label">📅 MISSION DATE</div>
+        <div class="intel-value">April 19, 2026</div>
+      </div>
+      <div class="intel-item">
+        <div class="intel-label">⏰ DEPLOY TIME</div>
+        <div class="intel-value">06:00 PM EST</div>
+      </div>
+      <div class="intel-item" style="grid-column:1/-1">
+        <div class="intel-label">📍 SECTOR HQ</div>
+        <div class="intel-value">1555 Gossage Ln NW, Concord, NC 28027</div>
+      </div>
+    </div>
+
+    <div class="briefing-box">
+      <div class="intro-name" id="guest-greeting">OPERATIVE — YOUR ORDERS AWAIT</div>
+      <p>You have been handpicked for a very special mission: celebrating Aaishvy's 6th birthday! 🌟 Join the squad for K-pop tunes, birthday cake, and a neon-lit afternoon you won't forget. Confirm your deployment below.</p>
+    </div>
+
+    <!-- RSVP Form -->
+    <div class="rsvp-form" id="rsvp-form-container">
+      <div class="form-title">CONFIRM YOUR STATUS</div>
+
+      <form id="rsvp-form" autocomplete="off">
+        <input type="hidden" id="guest-phone" name="phone" value="" />
+        <input type="hidden" id="guest-name-field" name="name" value="" />
+
+        <div class="field-group">
+          <label class="field-label">// YOUR RESPONSE</label>
+          <div class="radio-group">
+            <div class="radio-option">
+              <input type="radio" name="status" id="rsvp-yes" value="ACCEPTED" required />
+              <label for="rsvp-yes">✅ COUNT ME IN</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" name="status" id="rsvp-no" value="DECLINED" />
+              <label for="rsvp-no">❌ CAN'T MAKE IT</label>
+            </div>
+          </div>
+        </div>
+
+        <div id="yes-fields" style="display:none">
+          <div class="field-group">
+            <label class="field-label" for="squad-count">// SQUAD SIZE (total headcount including you)</label>
+            <input type="number" id="squad-count" name="squadCount" min="1" max="20" placeholder="e.g. 2" />
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">// RATION PREFERENCE</label>
+            <div class="food-group">
+              <div class="radio-option">
+                <input type="radio" name="food" id="food-veg" value="VEG" />
+                <label for="food-veg">🥦 VEG</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" name="food" id="food-nonveg" value="NON-VEG" />
+                <label for="food-nonveg">🍗 NON-VEG</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" name="food" id="food-both" value="BOTH" />
+                <label for="food-both">🍽️ BOTH</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="notes">// SPECIAL NOTES / ALLERGIES (optional)</label>
+            <input type="text" id="notes" name="notes" placeholder="Any dietary needs or notes..." />
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">TRANSMIT RESPONSE ▶</button>
+      </form>
+    </div>
+
+    <!-- Success Screen -->
+    <div id="success-screen">
+      <div class="success-icon">🎖️</div>
+      <div class="success-title">ACCESS GRANTED</div>
+      <div class="success-msg" id="success-msg">
+        Your deployment has been confirmed.<br/>
+        Agency Command will see you at Concord HQ on April 19th!
+      </div>
+      <div class="qr-container" id="qr-container"></div>
+      <div class="qr-label" id="qr-label"></div>
+    </div>
+
+    <!-- Declined Screen -->
+    <div id="declined-screen">
+      <div class="success-icon">😔</div>
+      <div class="declined-title">STANDING DOWN</div>
+      <div class="success-msg">We'll miss you, Operative. Maybe next mission!<br/>Aaishvy sends her love. 💕</div>
+    </div>
+
+    <div class="footer">// AGENCY COMMAND — CONCORD SECTOR — 2026 //</div>
+  </div>
+
+  <script>
+    // Extract guestName and phone from URL path and query
+    const pathParts = window.location.pathname.split('/');
+    const rawName = pathParts[pathParts.length - 1];
+    const guestName = decodeURIComponent(rawName).replace(/-/g, ' ');
+    const params = new URLSearchParams(window.location.search);
+    const guestPhone = params.get('phone') || '';
+
+    // Set hidden fields
+    document.getElementById('guest-name-field').value = guestName;
+    document.getElementById('guest-phone').value = guestPhone;
+
+    // Personalize greeting
+    if (guestName && guestName !== 'guest') {
+      document.getElementById('guest-greeting').textContent = `OPERATIVE: ${guestName.toUpperCase()} — YOUR ORDERS AWAIT`;
+      document.title = `Mission Briefing — ${guestName}`;
+    }
+
+    // Show/hide YES fields
+    document.querySelectorAll('input[name="status"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.getElementById('yes-fields').style.display =
+          document.querySelector('input[name="status"]:checked').value === 'ACCEPTED' ? 'block' : 'none';
+      });
+    });
+
+    // Form submit
+    document.getElementById('rsvp-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      btn.textContent = 'TRANSMITTING...';
+      btn.disabled = true;
+
+      const form = new FormData(e.target);
+      const data = Object.fromEntries(form.entries());
+      data.squadCount = parseInt(data.squadCount) || 1;
+
+      try {
+        const res = await fetch('/submit-rsvp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+
+        document.getElementById('rsvp-form-container').style.display = 'none';
+
+        if (data.status === 'ACCEPTED') {
+          document.getElementById('success-screen').style.display = 'block';
+          document.getElementById('success-msg').innerHTML =
+            `Squad of <strong>${data.squadCount}</strong> confirmed, Operative ${guestName}! 🎉<br/>See you at Concord HQ on April 19th at 6PM!`;
+          if (result.qrCode) {
+            document.getElementById('qr-container').innerHTML = `<img src="${result.qrCode}" alt="Access Badge" />`;
+            document.getElementById('qr-label').textContent = `// ACCESS BADGE — ${guestName.toUpperCase()} //`;
+          }
+        } else {
+          document.getElementById('declined-screen').style.display = 'block';
+        }
+      } catch (err) {
+        btn.textContent = 'ERROR — TRY AGAIN';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

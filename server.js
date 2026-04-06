@@ -114,18 +114,18 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-function saveRsvp(phone, name, status) {
+function saveRsvp(phone, name, status, extra = {}) {
   const filePath = path.join(__dirname, 'rsvps.json');
   let data = [];
   if (fs.existsSync(filePath)) {
     data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
   }
   const index = data.findIndex(r => r.phone === phone);
+  const record = { phone, name, status, ...extra, timestamp: new Date() };
   if (index !== -1) {
-    data[index].status = status;
-    data[index].name = name;
+    data[index] = { ...data[index], ...record };
   } else {
-    data.push({ phone, name, status, timestamp: new Date() });
+    data.push(record);
   }
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
@@ -140,6 +140,36 @@ app.get('/api/rsvps', (req, res) => {
     res.json([]);
   }
 });
+
+// Personalized mission RSVP page
+app.get('/mission/:guestName', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'mission.html'));
+});
+
+// Handle web RSVP form submission
+app.post('/submit-rsvp', async (req, res) => {
+  const { name, phone, status, squadCount, food, notes } = req.body;
+  const QRCode = require('qrcode');
+
+  saveRsvp(phone || 'web', name || 'Guest', status, { squadCount, food, notes });
+
+  let qrCode = null;
+  if (status === 'ACCEPTED') {
+    try {
+      const badge = `AGENCY COMMAND\nOPERATIVE: ${(name || 'GUEST').toUpperCase()}\nSTATUS: CLEARED\nMISSION: OPERATION AAISHVY\nDATE: APRIL 19, 2026`;
+      qrCode = await QRCode.toDataURL(badge, {
+        color: { dark: '#00f5ff', light: '#000014' },
+        width: 300,
+        margin: 2
+      });
+    } catch (e) {
+      console.error('QR gen error:', e.message);
+    }
+  }
+
+  res.json({ ok: true, qrCode });
+});
+
 
 async function sendWhatsAppMessage(to, text) {
   const payload = {
