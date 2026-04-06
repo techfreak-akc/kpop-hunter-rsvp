@@ -3,558 +3,748 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mission Briefing — Aaishvy's Birthday</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <title>✨ Mission Briefing — Aaishvy's Birthday</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --neon-cyan: #00f5ff;
-      --neon-pink: #ff006e;
-      --neon-purple: #8b00ff;
-      --neon-green: #00ff88;
-      --dark-bg: #020010;
-      --panel-bg: rgba(0, 10, 30, 0.85);
+      --pink: #ff006e;
+      --cyan: #00f5ff;
+      --purple: #b200ff;
+      --green: #00ff88;
+      --yellow: #ffee00;
+      --bg: #03000f;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: var(--dark-bg);
-      color: #cdd6f4;
+      background: var(--bg);
+      color: #e2e8f0;
       font-family: 'Share Tech Mono', monospace;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* Animated grid background */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-      animation: gridScroll 20s linear infinite;
+    /* ── CANVAS LAYERS ────────────────────────── */
+    #matrix-canvas {
+      position: fixed; inset: 0;
+      z-index: 0; opacity: 0.07;
       pointer-events: none;
-      z-index: 0;
     }
-    @keyframes gridScroll {
-      0% { background-position: 0 0; }
-      100% { background-position: 40px 40px; }
+    #particle-canvas {
+      position: fixed; inset: 0;
+      z-index: 1; opacity: 0.6;
+      pointer-events: none;
     }
 
     /* Scanlines */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    .scanlines {
+      position: fixed; inset: 0; z-index: 2;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.12) 3px, rgba(0,0,0,0.12) 4px);
       pointer-events: none;
-      z-index: 1;
     }
 
-    .container {
-      position: relative;
-      z-index: 2;
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 20px 16px 60px;
+    /* Grid */
+    .grid-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 25s linear infinite;
     }
+    @keyframes gridMove { to { background-position: 50px 50px; } }
 
-    /* Top scan bar */
-    .scan-bar {
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-pink), transparent);
-      margin-bottom: 28px;
-      animation: scanPulse 3s ease-in-out infinite;
+    /* ── BOOT SCREEN ──────────────────────────── */
+    #boot-screen {
+      position: fixed; inset: 0;
+      background: #000;
+      z-index: 500;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 30px;
     }
-    @keyframes scanPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
-
-    .terminal-header {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      color: var(--neon-green);
-      letter-spacing: 2px;
-      margin-bottom: 6px;
-    }
-
-    .system-tag {
-      display: inline-block;
-      background: var(--neon-pink);
-      color: #000;
-      font-size: 10px;
-      font-weight: bold;
-      padding: 2px 8px;
-      letter-spacing: 3px;
-      margin-bottom: 20px;
-    }
-
-    /* Main title */
-    .title {
+    .boot-logo {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(22px, 6vw, 40px);
+      font-size: clamp(28px, 8vw, 56px);
       font-weight: 900;
-      color: var(--neon-cyan);
-      text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px rgba(0,245,255,0.4);
-      line-height: 1.2;
-      margin-bottom: 6px;
-      animation: glitch 8s infinite;
+      color: var(--cyan);
+      text-shadow: 0 0 30px var(--cyan), 0 0 60px rgba(0,245,255,0.4);
+      animation: glitchPulse 0.5s infinite alternate;
+      letter-spacing: 6px;
+      text-align: center;
     }
-    @keyframes glitch {
-      0%,95%,100%{text-shadow:0 0 20px var(--neon-cyan),0 0 40px rgba(0,245,255,0.4)}
-      96%{text-shadow:-2px 0 var(--neon-pink),2px 0 var(--neon-cyan)}
-      97%{text-shadow:2px 0 var(--neon-pink),-2px 0 var(--neon-cyan)}
-      98%{text-shadow:0 0 20px var(--neon-cyan),0 0 40px rgba(0,245,255,0.4)}
+    @keyframes glitchPulse {
+      0% { text-shadow: 0 0 30px var(--cyan), 0 0 60px rgba(0,245,255,0.4); clip-path: inset(0 0 0 0); }
+      20% { clip-path: inset(20% 0 30% 0); transform: translateX(-3px); text-shadow: -3px 0 var(--pink), 3px 0 var(--cyan); }
+      40% { clip-path: inset(50% 0 10% 0); transform: translateX(3px); }
+      60% { clip-path: inset(10% 0 50% 0); transform: translateX(-1px); }
+      100% { text-shadow: 0 0 30px var(--cyan), 0 0 60px rgba(0,245,255,0.4); clip-path: inset(0 0 0 0); }
+    }
+    .boot-sub {
+      font-size: 12px; letter-spacing: 5px;
+      color: var(--pink); margin-top: 12px;
+      text-shadow: 0 0 10px var(--pink);
+    }
+    #boot-log {
+      margin-top: 30px;
+      width: 100%; max-width: 500px;
+      font-size: 11px; color: var(--green);
+      line-height: 1.8; letter-spacing: 1px;
+    }
+    .boot-line { opacity: 0; animation: fadeIn 0.1s forwards; }
+    @keyframes fadeIn { to { opacity: 1; } }
+    .boot-bar {
+      margin-top: 20px;
+      width: 100%; max-width: 500px;
+      height: 3px; background: rgba(0,245,255,0.1);
+      border: 1px solid rgba(0,245,255,0.2);
+    }
+    .boot-bar-fill {
+      height: 100%; background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      width: 0%; transition: width 0.05s linear;
+    }
+
+    /* ── MAIN CONTENT ─────────────────────────── */
+    #main-content {
+      position: relative; z-index: 10;
+      opacity: 0; transition: opacity 0.8s ease;
+      max-width: 700px; margin: 0 auto;
+      padding: 24px 16px 80px;
+    }
+    #main-content.visible { opacity: 1; }
+
+    /* Top ticker */
+    .ticker-wrap {
+      overflow: hidden;
+      border-top: 1px solid rgba(255,0,110,0.4);
+      border-bottom: 1px solid rgba(255,0,110,0.4);
+      padding: 6px 0; margin-bottom: 24px;
+      background: rgba(255,0,110,0.05);
+    }
+    .ticker {
+      display: inline-block;
+      white-space: nowrap;
+      animation: ticker 20s linear infinite;
+      font-size: 10px; letter-spacing: 3px;
+      color: var(--pink);
+    }
+    @keyframes ticker { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+
+    /* Header */
+    .sys-tag {
+      font-size: 9px; letter-spacing: 4px;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+    .main-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(26px, 7vw, 52px);
+      font-weight: 900;
+      line-height: 1.1; margin-bottom: 4px;
+      background: linear-gradient(135deg, var(--cyan), var(--pink), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: titleShift 6s ease-in-out infinite alternate;
+      position: relative;
+    }
+    @keyframes titleShift {
+      0% { filter: drop-shadow(0 0 10px rgba(0,245,255,0.6)); }
+      50% { filter: drop-shadow(0 0 20px rgba(255,0,110,0.6)); }
+      100% { filter: drop-shadow(0 0 10px rgba(178,0,255,0.6)); }
+    }
+
+    .title-glitch {
+      position: relative; display: inline-block;
+    }
+    .title-glitch::before, .title-glitch::after {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0;
+      background: linear-gradient(135deg, var(--cyan), var(--pink), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .title-glitch::before {
+      animation: glitchTop 4s infinite;
+      clip-path: inset(0 0 50% 0);
+    }
+    .title-glitch::after {
+      animation: glitchBot 4s infinite 0.1s;
+      clip-path: inset(50% 0 0 0);
+    }
+    @keyframes glitchTop {
+      0%,90%,100%{transform:translate(0)} 91%{transform:translate(-2px,-2px)} 95%{transform:translate(2px,0)}
+    }
+    @keyframes glitchBot {
+      0%,90%,100%{transform:translate(0)} 92%{transform:translate(2px,2px)} 96%{transform:translate(-2px,0)}
     }
 
     .subtitle {
-      color: var(--neon-pink);
-      font-size: 13px;
-      letter-spacing: 4px;
+      font-size: 11px; letter-spacing: 5px;
+      color: var(--pink);
+      text-shadow: 0 0 10px var(--pink);
       margin-bottom: 28px;
-      text-shadow: 0 0 10px var(--neon-pink);
     }
+
+    /* Divider */
+    .neon-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--pink), transparent);
+      margin: 20px 0;
+      animation: dividerPulse 3s ease-in-out infinite;
+    }
+    @keyframes dividerPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
 
     /* Poster */
-    .poster-frame {
-      position: relative;
-      border: 1px solid var(--neon-cyan);
-      box-shadow: 0 0 20px rgba(0,245,255,0.2), inset 0 0 20px rgba(0,245,255,0.05);
-      margin-bottom: 28px;
-      overflow: hidden;
+    .poster-outer {
+      position: relative; margin-bottom: 28px;
     }
-    .poster-frame::before {
-      content: 'CLASSIFIED: MISSION POSTER';
-      position: absolute;
-      top: 8px; left: 12px;
-      font-size: 9px;
-      color: var(--neon-green);
-      letter-spacing: 2px;
-      z-index: 3;
-    }
-    .poster-frame img {
-      width: 100%;
-      display: block;
-      filter: saturate(1.3) contrast(1.05);
-    }
-
-    /* Info grid */
-    .intel-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 28px;
-    }
-    .intel-item {
-      background: var(--panel-bg);
-      border: 1px solid rgba(0,245,255,0.2);
-      padding: 14px;
-      position: relative;
-    }
-    .intel-item::before {
+    .poster-outer::before, .poster-outer::after {
       content: '';
       position: absolute;
-      top: 0; left: 0;
-      width: 3px; height: 100%;
-      background: var(--neon-cyan);
+      inset: -2px;
+      border-radius: 2px;
+      background: linear-gradient(45deg, var(--cyan), var(--pink), var(--purple), var(--cyan));
+      background-size: 300% 300%;
+      animation: borderRotate 4s linear infinite;
+      z-index: -1;
     }
-    .intel-label {
-      font-size: 9px;
-      color: var(--neon-cyan);
-      letter-spacing: 3px;
-      margin-bottom: 6px;
+    .poster-outer::after { filter: blur(8px); opacity: 0.5; }
+    @keyframes borderRotate { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .poster-inner {
+      position: relative; overflow: hidden;
+      background: #000;
     }
-    .intel-value {
-      font-size: 13px;
-      color: #fff;
-      font-weight: bold;
+    .poster-inner img {
+      width: 100%; display: block;
+      filter: saturate(1.4) contrast(1.05);
     }
+    .poster-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(0,245,255,0.05) 0%, transparent 40%, rgba(255,0,110,0.08) 100%);
+      pointer-events: none;
+    }
+    .poster-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid var(--cyan);
+      font-size: 9px; letter-spacing: 2px;
+      color: var(--cyan); padding: 4px 10px;
+    }
+    .poster-badge2 {
+      position: absolute; bottom: 12px; right: 12px;
+      background: var(--pink);
+      color: #000; font-size: 9px;
+      font-weight: 900; letter-spacing: 2px;
+      padding: 4px 10px;
+      animation: badgePulse 1.5s ease-in-out infinite;
+    }
+    @keyframes badgePulse { 0%,100%{box-shadow:0 0 8px var(--pink)} 50%{box-shadow:0 0 20px var(--pink),0 0 40px var(--pink)} }
 
-    /* Welcome message */
-    .briefing-box {
-      background: var(--panel-bg);
-      border: 1px solid rgba(255,0,110,0.3);
-      border-left: 3px solid var(--neon-pink);
-      padding: 18px;
-      margin-bottom: 28px;
-      position: relative;
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px; margin-bottom: 24px;
     }
-    .briefing-box .intro-name {
-      font-family: 'Orbitron', sans-serif;
-      color: var(--neon-pink);
-      font-size: 14px;
-      margin-bottom: 10px;
-      text-shadow: 0 0 10px var(--neon-pink);
-    }
-    .briefing-box p {
-      font-size: 14px;
-      line-height: 1.7;
-      color: #cbd5e1;
-    }
-
-    /* Form */
-    .rsvp-form {
-      background: var(--panel-bg);
+    .stat-card {
+      background: rgba(0,10,30,0.8);
       border: 1px solid rgba(0,245,255,0.15);
+      padding: 14px 16px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .stat-card:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0,245,255,0.15);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 3px; height: 100%;
+    }
+    .stat-card.c { --c: var(--cyan); }
+    .stat-card.p { --c: var(--pink); }
+    .stat-card.g { --c: var(--green); }
+    .stat-card.y { --c: var(--yellow); }
+    .stat-card::before { background: var(--c, var(--cyan)); box-shadow: 0 0 8px var(--c, var(--cyan)); }
+    .stat-label { font-size: 9px; letter-spacing: 3px; color: var(--c, var(--cyan)); margin-bottom: 6px; }
+    .stat-val { font-size: 14px; color: #fff; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+
+    /* Briefing */
+    .briefing {
+      background: rgba(0,10,30,0.8);
+      border: 1px solid rgba(255,0,110,0.25);
+      border-left: 3px solid var(--pink);
+      box-shadow: 0 0 20px rgba(255,0,110,0.05);
+      padding: 20px; margin-bottom: 24px;
+    }
+    .briefing-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px; color: var(--cyan);
+      text-shadow: 0 0 10px var(--cyan);
+      margin-bottom: 12px; letter-spacing: 2px;
+    }
+    .briefing p {
+      font-size: 14px; line-height: 1.8;
+      color: #94a3b8;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 500;
+    }
+    .briefing strong { color: var(--pink); font-family: 'Share Tech Mono', monospace; }
+
+    /* RSVP Form */
+    .rsvp-panel {
+      background: rgba(0,10,30,0.85);
+      border: 1px solid rgba(0,245,255,0.12);
       padding: 24px;
     }
-    .form-title {
+    .panel-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 13px;
-      color: var(--neon-green);
-      letter-spacing: 3px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-size: 11px; letter-spacing: 4px;
+      color: var(--green); margin-bottom: 22px;
+      display: flex; align-items: center; gap: 10px;
     }
-    .form-title::before {
-      content: '▶';
-      color: var(--neon-pink);
-      animation: blink 1s step-end infinite;
-    }
+    .blink { animation: blink 1s step-end infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-    .field-group { margin-bottom: 18px; }
-    .field-label {
-      display: block;
-      font-size: 10px;
-      color: var(--neon-cyan);
-      letter-spacing: 3px;
+    .field-row { margin-bottom: 18px; }
+    .field-lbl {
+      display: block; font-size: 9px;
+      letter-spacing: 3px; color: var(--cyan);
       margin-bottom: 8px;
     }
 
-    select, input[type="number"], input[type="text"] {
+    /* Radio cards */
+    .radio-row { display: flex; gap: 10px; }
+    .r-opt { flex: 1; }
+    .r-opt input { display: none; }
+    .r-opt label {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; padding: 14px 10px;
+      border: 1px solid rgba(0,245,255,0.2);
+      cursor: pointer; font-size: 12px;
+      letter-spacing: 1px;
+      transition: all 0.2s; font-family: 'Share Tech Mono', monospace;
+    }
+    .r-opt input:checked + label {
+      border-color: var(--pink); background: rgba(255,0,110,0.08);
+      color: var(--pink); box-shadow: 0 0 15px rgba(255,0,110,0.2), inset 0 0 10px rgba(255,0,110,0.05);
+    }
+    .r-opt label:hover { border-color: var(--cyan); background: rgba(0,245,255,0.04); }
+
+    /* Inputs */
+    input[type="number"], input[type="text"] {
       width: 100%;
-      background: rgba(0,0,20,0.8);
-      border: 1px solid rgba(0,245,255,0.3);
+      background: rgba(0,0,20,0.9);
+      border: 1px solid rgba(0,245,255,0.2);
       color: #fff;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 14px;
-      padding: 12px 14px;
+      font-size: 14px; padding: 13px 14px;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
-      appearance: none;
     }
-    select:focus, input:focus {
-      border-color: var(--neon-cyan);
-      box-shadow: 0 0 12px rgba(0,245,255,0.2);
+    input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0,245,255,0.15);
     }
+    input::placeholder { color: rgba(0,245,255,0.25); }
 
-    /* Radio buttons for RSVP */
-    .radio-group {
-      display: flex;
-      gap: 12px;
-    }
-    .radio-option {
-      flex: 1;
-      position: relative;
-    }
-    .radio-option input { display: none; }
-    .radio-option label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 14px;
-      border: 1px solid rgba(0,245,255,0.2);
-      cursor: pointer;
-      font-size: 13px;
-      transition: all 0.2s;
-      letter-spacing: 1px;
-    }
-    .radio-option input:checked + label {
-      border-color: var(--neon-pink);
-      background: rgba(255,0,110,0.1);
-      color: var(--neon-pink);
-      box-shadow: 0 0 12px rgba(255,0,110,0.2);
-    }
-    .radio-option label:hover {
-      border-color: var(--neon-cyan);
-      background: rgba(0,245,255,0.05);
-    }
-
-    /* Food radio group */
-    .food-group {
-      display: flex;
-      gap: 12px;
-    }
-
-    /* Submit button */
+    /* Submit */
     .submit-btn {
-      width: 100%;
-      padding: 16px;
+      width: 100%; padding: 16px;
       background: transparent;
-      border: 2px solid var(--neon-cyan);
-      color: var(--neon-cyan);
+      border: 2px solid var(--cyan);
+      color: var(--cyan);
       font-family: 'Orbitron', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 4px;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s;
-      margin-top: 8px;
-      text-transform: uppercase;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 5px; cursor: pointer;
+      position: relative; overflow: hidden;
+      transition: all 0.3s; margin-top: 8px;
     }
     .submit-btn::before {
       content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--neon-cyan);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.3s;
-      z-index: -1;
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s; z-index: -1;
     }
-    .submit-btn:hover {
-      color: #000;
-      box-shadow: 0 0 25px rgba(0,245,255,0.5);
-    }
+    .submit-btn:hover { color: #000; box-shadow: 0 0 30px rgba(0,245,255,0.5); }
     .submit-btn:hover::before { transform: scaleX(1); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .submit-btn.declined {
-      border-color: var(--neon-pink);
-      color: var(--neon-pink);
-      margin-top: 12px;
-      font-size: 12px;
-      padding: 10px;
-      opacity: 0.7;
-    }
-    .submit-btn.declined:hover {
-      color: #000;
-      box-shadow: 0 0 25px rgba(255,0,110,0.3);
-    }
-    .submit-btn.declined::before { background: var(--neon-pink); }
+    /* Hidden sections */
+    #yes-fields { display: none; }
 
-    /* Success screen */
-    #success-screen {
-      display: none;
-      text-align: center;
-      padding: 40px 20px;
-      background: var(--panel-bg);
-      border: 1px solid var(--neon-green);
-      box-shadow: 0 0 40px rgba(0,255,136,0.15);
+    /* Result screens */
+    #success-screen, #declined-screen {
+      display: none; text-align: center; padding: 50px 20px;
+      background: rgba(0,10,30,0.85);
     }
-    .success-icon {
-      font-size: 50px;
-      margin-bottom: 16px;
-      animation: pulse 2s ease-in-out infinite;
+    #success-screen { border: 1px solid var(--green); box-shadow: 0 0 40px rgba(0,255,136,0.1); }
+    #declined-screen { border: 1px solid var(--pink); }
+    .result-icon { font-size: 60px; margin-bottom: 16px; animation: floatIcon 3s ease-in-out infinite; }
+    @keyframes floatIcon { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .result-title {
+      font-family: 'Orbitron', sans-serif; font-size: 22px;
+      letter-spacing: 4px; margin-bottom: 12px;
     }
-    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
-    .success-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 22px;
-      color: var(--neon-green);
-      text-shadow: 0 0 20px var(--neon-green);
-      margin-bottom: 10px;
-      letter-spacing: 3px;
-    }
-    .success-msg { color: #94a3b8; font-size: 14px; line-height: 1.7; margin-bottom: 20px; }
-    .qr-container img { max-width: 200px; border: 2px solid var(--neon-green); padding: 10px; background: #fff; }
-    .qr-label { font-size: 10px; color: var(--neon-green); letter-spacing: 3px; margin-top: 10px; }
+    #success-screen .result-title { color: var(--green); text-shadow: 0 0 20px var(--green); }
+    #declined-screen .result-title { color: var(--pink); text-shadow: 0 0 20px var(--pink); }
+    .result-msg { color: #94a3b8; font-family: 'Rajdhani', sans-serif; font-size: 16px; line-height: 1.7; }
+    .qr-wrap { margin-top: 24px; display: inline-block; }
+    .qr-wrap img { max-width: 200px; border: 2px solid var(--green); padding: 12px; background: #000; display: block; }
+    .qr-lbl { font-size: 9px; letter-spacing: 3px; color: var(--green); margin-top: 10px; }
 
-    /* Declined screen */
-    #declined-screen {
-      display: none;
-      text-align: center;
-      padding: 40px 20px;
-      background: var(--panel-bg);
-      border: 1px solid var(--neon-pink);
+    /* K-pop floating emojis */
+    .float-emoji {
+      position: fixed; pointer-events: none; z-index: 3;
+      font-size: 22px; animation: floatUp 6s ease-in infinite;
+      opacity: 0;
     }
-    .declined-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 20px;
-      color: var(--neon-pink);
-      margin-bottom: 10px;
+    @keyframes floatUp {
+      0% { opacity: 0; transform: translateY(0) rotate(0deg); }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.4; }
+      100% { opacity: 0; transform: translateY(-80vh) rotate(360deg); }
     }
 
-    /* Footer */
-    .footer {
-      text-align: center;
-      margin-top: 36px;
-      font-size: 10px;
-      color: rgba(0,245,255,0.3);
-      letter-spacing: 2px;
-    }
+    /* Scroll bar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: var(--cyan); }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="scan-bar"></div>
-    <div class="terminal-header">> AGENCY_COMMAND.SYS // SECURE CHANNEL ACTIVE</div>
-    <div class="system-tag">CLASSIFIED — MISSION BRIEFING</div>
+  <!-- Canvas layers -->
+  <canvas id="matrix-canvas"></canvas>
+  <canvas id="particle-canvas"></canvas>
+  <div class="grid-bg"></div>
+  <div class="scanlines"></div>
 
-    <div class="title">OPERATION AAISHVY</div>
-    <div class="subtitle">BIRTHDAY DEPLOYMENT — APRIL 19TH</div>
+  <!-- Boot screen -->
+  <div id="boot-screen">
+    <div class="boot-logo">AGENCY<br/>COMMAND</div>
+    <div class="boot-sub">// K-POP HUNTER UNIT — SECURE CHANNEL //</div>
+    <div id="boot-log"></div>
+    <div class="boot-bar"><div class="boot-bar-fill" id="boot-bar-fill"></div></div>
+  </div>
 
-    <div class="poster-frame">
-      <img src="/kpop-poster-2.jpeg" alt="Aaishvy Birthday Poster" />
+  <!-- Main content -->
+  <div id="main-content">
+    <div class="ticker-wrap">
+      <span class="ticker">⭐ OPERATION AAISHVY — APRIL 19TH 2026 &nbsp;⚡&nbsp; K-POP HUNTER UNIT — CONCORD SECTOR &nbsp;💜&nbsp; AGENCY COMMAND ACTIVE &nbsp;🌸&nbsp; CLASSIFIED TRANSMISSION &nbsp;⚡&nbsp; NEON PROTOCOL ENGAGED &nbsp;⭐&nbsp;</span>
     </div>
 
-    <div class="intel-grid">
-      <div class="intel-item">
-        <div class="intel-label">📅 MISSION DATE</div>
-        <div class="intel-value">April 19, 2026</div>
-      </div>
-      <div class="intel-item">
-        <div class="intel-label">⏰ DEPLOY TIME</div>
-        <div class="intel-value">06:00 PM EST</div>
-      </div>
-      <div class="intel-item" style="grid-column:1/-1">
-        <div class="intel-label">📍 SECTOR HQ</div>
-        <div class="intel-value">1555 Gossage Ln NW, Concord, NC 28027</div>
+    <div class="sys-tag">> SYSTEM_ONLINE // MISSION_BRIEFING_ACTIVE</div>
+    <div class="main-title">
+      <span class="title-glitch" data-text="OPERATION">OPERATION</span><br/>
+      <span class="title-glitch" data-text="AAISHVY">AAISHVY</span>
+    </div>
+    <div class="subtitle">BIRTHDAY DEPLOYMENT — CONCORD SECTOR HQ</div>
+
+    <div class="neon-divider"></div>
+
+    <!-- Poster -->
+    <div class="poster-outer">
+      <div class="poster-inner">
+        <img src="/kpop-poster-2.jpeg" alt="Operation Aaishvy Mission Poster" />
+        <div class="poster-overlay"></div>
+        <div class="poster-badge">⚡ CLASSIFIED // DO NOT SHARE</div>
+        <div class="poster-badge2">█ LIVE BRIEFING</div>
       </div>
     </div>
 
-    <div class="briefing-box">
-      <div class="intro-name" id="guest-greeting">OPERATIVE — YOUR ORDERS AWAIT</div>
-      <p>You have been handpicked for a very special mission: celebrating Aaishvy's 6th birthday! 🌟 Join the squad for K-pop tunes, birthday cake, and a neon-lit afternoon you won't forget. Confirm your deployment below.</p>
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card c">
+        <div class="stat-label">📅 MISSION DATE</div>
+        <div class="stat-val">April 19, 2026</div>
+      </div>
+      <div class="stat-card p">
+        <div class="stat-label">⏰ DEPLOY TIME</div>
+        <div class="stat-val">18:00 HRS EST</div>
+      </div>
+      <div class="stat-card g" style="grid-column:1/-1">
+        <div class="stat-label">📍 SECTOR COORDINATES</div>
+        <div class="stat-val">1555 Gossage Ln NW, Concord, NC 28027</div>
+      </div>
+      <div class="stat-card y" style="grid-column:1/-1">
+        <div class="stat-label">🎌 DRESS CODE</div>
+        <div class="stat-val">Neon / Sparkly / K-pop Energy ✨</div>
+      </div>
     </div>
+
+    <!-- Briefing -->
+    <div class="briefing">
+      <div class="briefing-name" id="guest-greeting">⚡ OPERATIVE — BRIEFING INCOMING</div>
+      <p>
+        You've been hand-selected for a <strong>CLASSIFIED MISSION</strong> — celebrating our little superstar <strong>AAISHVY</strong> as she levels up to <strong>AGE 6</strong>! 🎂🌟<br/><br/>
+        Her parents built this invite from scratch — <strong>just for you</strong> — and they're watching the RSVPs roll in live on their command dashboard right now. The squad is assembling. <strong>Will you join us?</strong>
+      </p>
+    </div>
+
+    <div class="neon-divider"></div>
 
     <!-- RSVP Form -->
-    <div class="rsvp-form" id="rsvp-form-container">
-      <div class="form-title">CONFIRM YOUR STATUS</div>
+    <div class="rsvp-panel" id="rsvp-panel">
+      <div class="panel-title">
+        <span class="blink">▶</span> CONFIRM DEPLOYMENT STATUS
+      </div>
 
       <form id="rsvp-form" autocomplete="off">
-        <input type="hidden" id="guest-phone" name="phone" value="" />
-        <input type="hidden" id="guest-name-field" name="name" value="" />
+        <input type="hidden" id="guest-phone" name="phone" />
+        <input type="hidden" id="guest-name-f" name="name" />
 
-        <div class="field-group">
-          <label class="field-label">// YOUR RESPONSE</label>
-          <div class="radio-group">
-            <div class="radio-option">
-              <input type="radio" name="status" id="rsvp-yes" value="ACCEPTED" required />
-              <label for="rsvp-yes">✅ COUNT ME IN</label>
+        <div class="field-row">
+          <label class="field-lbl">// YOUR RESPONSE</label>
+          <div class="radio-row">
+            <div class="r-opt">
+              <input type="radio" name="status" id="s-yes" value="ACCEPTED" required />
+              <label for="s-yes">✅ COUNT ME IN</label>
             </div>
-            <div class="radio-option">
-              <input type="radio" name="status" id="rsvp-no" value="DECLINED" />
-              <label for="rsvp-no">❌ CAN'T MAKE IT</label>
+            <div class="r-opt">
+              <input type="radio" name="status" id="s-no" value="DECLINED" />
+              <label for="s-no">❌ CAN'T MAKE IT</label>
             </div>
           </div>
         </div>
 
-        <div id="yes-fields" style="display:none">
-          <div class="field-group">
-            <label class="field-label" for="squad-count">// SQUAD SIZE (total headcount including you)</label>
-            <input type="number" id="squad-count" name="squadCount" min="1" max="20" placeholder="e.g. 2" />
+        <div id="yes-fields">
+          <div class="field-row">
+            <label class="field-lbl" for="squad">// SQUAD HEADCOUNT (including yourself)</label>
+            <input type="number" id="squad" name="squadCount" min="1" max="20" placeholder="e.g. 2" />
           </div>
-
-          <div class="field-group">
-            <label class="field-label">// RATION PREFERENCE</label>
-            <div class="food-group">
-              <div class="radio-option">
-                <input type="radio" name="food" id="food-veg" value="VEG" />
-                <label for="food-veg">🥦 VEG</label>
+          <div class="field-row">
+            <label class="field-lbl">// RATION SELECTION</label>
+            <div class="radio-row">
+              <div class="r-opt">
+                <input type="radio" name="food" id="f-veg" value="VEG" />
+                <label for="f-veg">🥦 VEG</label>
               </div>
-              <div class="radio-option">
-                <input type="radio" name="food" id="food-nonveg" value="NON-VEG" />
-                <label for="food-nonveg">🍗 NON-VEG</label>
+              <div class="r-opt">
+                <input type="radio" name="food" id="f-nv" value="NON-VEG" />
+                <label for="f-nv">🍗 NON-VEG</label>
               </div>
-              <div class="radio-option">
-                <input type="radio" name="food" id="food-both" value="BOTH" />
-                <label for="food-both">🍽️ BOTH</label>
+              <div class="r-opt">
+                <input type="radio" name="food" id="f-both" value="BOTH" />
+                <label for="f-both">🍽️ BOTH</label>
               </div>
             </div>
           </div>
-
-          <div class="field-group">
-            <label class="field-label" for="notes">// SPECIAL NOTES / ALLERGIES (optional)</label>
-            <input type="text" id="notes" name="notes" placeholder="Any dietary needs or notes..." />
+          <div class="field-row">
+            <label class="field-lbl" for="notes">// SPECIAL NOTES / ALLERGIES (optional)</label>
+            <input type="text" id="notes" name="notes" placeholder="Any dietary needs..." />
           </div>
         </div>
 
-        <button type="submit" class="submit-btn" id="submit-btn">TRANSMIT RESPONSE ▶</button>
+        <button type="submit" class="submit-btn" id="submit-btn">TRANSMIT TO COMMAND ▶</button>
       </form>
     </div>
 
-    <!-- Success Screen -->
+    <!-- Success -->
     <div id="success-screen">
-      <div class="success-icon">🎖️</div>
-      <div class="success-title">ACCESS GRANTED</div>
-      <div class="success-msg" id="success-msg">
-        Your deployment has been confirmed.<br/>
-        Agency Command will see you at Concord HQ on April 19th!
+      <div class="result-icon">🎖️</div>
+      <div class="result-title">ACCESS GRANTED</div>
+      <div class="result-msg" id="success-msg">
+        Deployment confirmed. See you at Concord HQ on April 19th!
       </div>
-      <div class="qr-container" id="qr-container"></div>
-      <div class="qr-label" id="qr-label"></div>
+      <div class="qr-wrap" id="qr-wrap" style="display:none">
+        <img id="qr-img" src="" alt="Access Badge" />
+        <div class="qr-lbl" id="qr-lbl">// YOUR ACCESS BADGE //</div>
+      </div>
     </div>
 
-    <!-- Declined Screen -->
+    <!-- Declined -->
     <div id="declined-screen">
-      <div class="success-icon">😔</div>
-      <div class="declined-title">STANDING DOWN</div>
-      <div class="success-msg">We'll miss you, Operative. Maybe next mission!<br/>Aaishvy sends her love. 💕</div>
+      <div class="result-icon">💔</div>
+      <div class="result-title">STANDING DOWN</div>
+      <div class="result-msg">We'll miss you, Operative.<br/>Aaishvy sends her love — maybe next mission! 💕</div>
     </div>
-
-    <div class="footer">// AGENCY COMMAND — CONCORD SECTOR — 2026 //</div>
   </div>
 
+  <!-- Floating K-pop emojis -->
+  <div id="floaters"></div>
+
   <script>
-    // Extract guestName and phone from URL path and query
-    const pathParts = window.location.pathname.split('/');
-    const rawName = pathParts[pathParts.length - 1];
-    const guestName = decodeURIComponent(rawName).replace(/-/g, ' ');
-    const params = new URLSearchParams(window.location.search);
-    const guestPhone = params.get('phone') || '';
+  // ── BOOT SEQUENCE ──────────────────────────────────────────────────────────
+  const BOOT_LINES = [
+    '> INITIALIZING AGENCY COMMAND PROTOCOL...',
+    '> LOADING K-POP HUNTER UNIT DATABASE...',
+    '> DECRYPTING MISSION BRIEFING...',
+    '> SCANNING OPERATIVE CLEARANCE...',
+    '> CALIBRATING NEON UPLINK...',
+    '> ESTABLISHING SECURE CHANNEL...',
+    '> ALL SYSTEMS ONLINE. BRIEFING READY.',
+  ];
+  const bootLog = document.getElementById('boot-log');
+  const bootFill = document.getElementById('boot-bar-fill');
+  let lineIdx = 0;
 
-    // Set hidden fields
-    document.getElementById('guest-name-field').value = guestName;
-    document.getElementById('guest-phone').value = guestPhone;
-
-    // Personalize greeting
-    if (guestName && guestName !== 'guest') {
-      document.getElementById('guest-greeting').textContent = `OPERATIVE: ${guestName.toUpperCase()} — YOUR ORDERS AWAIT`;
-      document.title = `Mission Briefing — ${guestName}`;
+  function nextBootLine() {
+    if (lineIdx >= BOOT_LINES.length) {
+      setTimeout(endBoot, 400);
+      return;
     }
+    const div = document.createElement('div');
+    div.className = 'boot-line';
+    div.textContent = BOOT_LINES[lineIdx];
+    div.style.animationDelay = '0s';
+    div.style.color = lineIdx === BOOT_LINES.length - 1 ? '#00f5ff' : '#00ff88';
+    bootLog.appendChild(div);
+    bootFill.style.width = ((lineIdx + 1) / BOOT_LINES.length * 100) + '%';
+    lineIdx++;
+    setTimeout(nextBootLine, 250);
+  }
 
-    // Show/hide YES fields
-    document.querySelectorAll('input[name="status"]').forEach(radio => {
-      radio.addEventListener('change', () => {
-        document.getElementById('yes-fields').style.display =
-          document.querySelector('input[name="status"]:checked').value === 'ACCEPTED' ? 'block' : 'none';
+  function endBoot() {
+    document.getElementById('boot-screen').style.transition = 'opacity 0.8s';
+    document.getElementById('boot-screen').style.opacity = '0';
+    setTimeout(() => {
+      document.getElementById('boot-screen').style.display = 'none';
+      document.getElementById('main-content').classList.add('visible');
+      startEffects();
+    }, 800);
+  }
+
+  setTimeout(nextBootLine, 600);
+
+  // ── MATRIX RAIN ────────────────────────────────────────────────────────────
+  function initMatrix() {
+    const c = document.getElementById('matrix-canvas');
+    const ctx = c.getContext('2d');
+    c.width = window.innerWidth; c.height = window.innerHeight;
+    const cols = Math.floor(c.width / 16);
+    const drops = Array(cols).fill(1);
+    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF♦♠♣';
+    function draw() {
+      ctx.fillStyle = 'rgba(0,0,0,0.05)';
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.fillStyle = '#00ff88';
+      ctx.font = '14px monospace';
+      drops.forEach((y, x) => {
+        const ch = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(ch, x * 16, y * 16);
+        if (y * 16 > c.height && Math.random() > 0.975) drops[x] = 0;
+        drops[x]++;
       });
+    }
+    setInterval(draw, 50);
+    window.addEventListener('resize', () => { c.width = window.innerWidth; c.height = window.innerHeight; });
+  }
+
+  // ── PARTICLES ──────────────────────────────────────────────────────────────
+  function initParticles() {
+    const c = document.getElementById('particle-canvas');
+    const ctx = c.getContext('2d');
+    c.width = window.innerWidth; c.height = window.innerHeight;
+    const colors = ['#ff006e','#00f5ff','#b200ff','#00ff88','#ffee00'];
+    const pts = Array.from({length: 60}, () => ({
+      x: Math.random() * c.width,
+      y: Math.random() * c.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 2 + 0.5,
+      c: colors[Math.floor(Math.random() * colors.length)]
+    }));
+    function draw() {
+      ctx.clearRect(0, 0, c.width, c.height);
+      pts.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > c.width) p.vx *= -1;
+        if (p.y < 0 || p.y > c.height) p.vy *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.c;
+        ctx.shadowBlur = 8; ctx.shadowColor = p.c;
+        ctx.fill();
+      });
+    }
+    setInterval(draw, 30);
+    window.addEventListener('resize', () => { c.width = window.innerWidth; c.height = window.innerHeight; });
+  }
+
+  // ── FLOATING EMOJIS ────────────────────────────────────────────────────────
+  const EMOJIS = ['🌸','💜','⭐','🎤','🎧','✨','💫','🎶','🌟','💕','🎀','⚡'];
+  function spawnEmoji() {
+    const el = document.createElement('div');
+    el.className = 'float-emoji';
+    el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    el.style.left = Math.random() * 95 + 'vw';
+    el.style.bottom = '-40px';
+    el.style.animationDuration = (5 + Math.random() * 5) + 's';
+    el.style.animationDelay = '0s';
+    document.getElementById('floaters').appendChild(el);
+    setTimeout(() => el.remove(), 10000);
+  }
+
+  function startEffects() {
+    initMatrix();
+    initParticles();
+    setInterval(spawnEmoji, 1800);
+  }
+
+  // ── PERSONALIZATION ────────────────────────────────────────────────────────
+  const pathParts = window.location.pathname.split('/');
+  const rawName = pathParts[pathParts.length - 1];
+  const guestName = decodeURIComponent(rawName).replace(/-/g, ' ').trim();
+  const params = new URLSearchParams(window.location.search);
+  const guestPhone = params.get('phone') || '';
+
+  document.getElementById('guest-phone').value = guestPhone;
+  document.getElementById('guest-name-f').value = guestName;
+
+  if (guestName && guestName.toLowerCase() !== 'guest') {
+    document.getElementById('guest-greeting').textContent = `⚡ OPERATIVE ${guestName.toUpperCase()} — BRIEFING INCOMING`;
+    document.title = `Mission Briefing — ${guestName}`;
+  }
+
+  // ── FORM LOGIC ─────────────────────────────────────────────────────────────
+  document.querySelectorAll('input[name="status"]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('yes-fields').style.display =
+        document.querySelector('input[name="status"]:checked').value === 'ACCEPTED' ? 'block' : 'none';
     });
+  });
 
-    // Form submit
-    document.getElementById('rsvp-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('submit-btn');
-      btn.textContent = 'TRANSMITTING...';
-      btn.disabled = true;
+  document.getElementById('rsvp-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    btn.textContent = 'TRANSMITTING...';
+    btn.disabled = true;
 
-      const form = new FormData(e.target);
-      const data = Object.fromEntries(form.entries());
-      data.squadCount = parseInt(data.squadCount) || 1;
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    data.squadCount = parseInt(data.squadCount) || 1;
 
-      try {
-        const res = await fetch('/submit-rsvp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        const result = await res.json();
+    try {
+      const res = await fetch('/submit-rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
 
-        document.getElementById('rsvp-form-container').style.display = 'none';
+      document.getElementById('rsvp-panel').style.display = 'none';
 
-        if (data.status === 'ACCEPTED') {
-          document.getElementById('success-screen').style.display = 'block';
-          document.getElementById('success-msg').innerHTML =
-            `Squad of <strong>${data.squadCount}</strong> confirmed, Operative ${guestName}! 🎉<br/>See you at Concord HQ on April 19th at 6PM!`;
-          if (result.qrCode) {
-            document.getElementById('qr-container').innerHTML = `<img src="${result.qrCode}" alt="Access Badge" />`;
-            document.getElementById('qr-label').textContent = `// ACCESS BADGE — ${guestName.toUpperCase()} //`;
-          }
-        } else {
-          document.getElementById('declined-screen').style.display = 'block';
+      if (data.status === 'ACCEPTED') {
+        document.getElementById('success-screen').style.display = 'block';
+        document.getElementById('success-msg').innerHTML =
+          `Squad of <strong>${data.squadCount}</strong> confirmed, Operative <strong>${guestName}</strong>! 🎉<br/>See you at Concord HQ — April 19th at 6 PM EST!`;
+        if (result.qrCode) {
+          document.getElementById('qr-img').src = result.qrCode;
+          document.getElementById('qr-wrap').style.display = 'inline-block';
+          document.getElementById('qr-lbl').textContent = `// ACCESS BADGE — ${guestName.toUpperCase()} //`;
         }
-      } catch (err) {
-        btn.textContent = 'ERROR — TRY AGAIN';
-        btn.disabled = false;
+      } else {
+        document.getElementById('declined-screen').style.display = 'block';
       }
-    });
+    } catch {
+      btn.textContent = 'ERROR — TRY AGAIN';
+      btn.disabled = false;
+    }
+  });
   </script>
 </body>
 </html>
