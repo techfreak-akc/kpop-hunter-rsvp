@@ -828,6 +828,10 @@
       }
       #chat-toggle { bottom: 16px; right: 16px; width: 54px; height: 54px; }
     }
+    @media (max-width: 480px) {
+      .chat-input-row { position: sticky; bottom: 0; background: rgba(2,0,20,0.97); }
+      #chat-input { font-size: 16px; } /* prevents iOS zoom on focus */
+    }
 
     .chat-header {
       padding: 14px 16px;
@@ -959,8 +963,32 @@
       if (chatPanel.classList.contains('open')) {
         chatMsgs.scrollTop = chatMsgs.scrollHeight;
         // Don't auto-focus on mobile — prevents keyboard from popping up and zooming in
+      } else {
+        // Reset any inline styles set by keyboard handler
+        chatPanel.style.bottom = '';
+        chatPanel.style.height = '';
+        chatPanel.style.maxHeight = '';
       }
     });
+
+    // Fix: when mobile keyboard opens, shrink chat panel to fit visible area
+    function onViewportResize() {
+      if (window.innerWidth > 480) return;
+      if (!chatPanel.classList.contains('open')) return;
+      const vv = window.visualViewport;
+      const visibleHeight = vv.height;
+      const offsetTop = vv.offsetTop || 0;
+      const bottomGap = 80; // space above toggle button
+      chatPanel.style.bottom = bottomGap + 'px';
+      chatPanel.style.height = (visibleHeight - bottomGap - 10) + 'px';
+      chatPanel.style.maxHeight = (visibleHeight - bottomGap - 10) + 'px';
+      // Scroll messages to bottom so send button stays visible
+      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', onViewportResize);
+    }
 
     function appendMsg(text, type) {
       const div = document.createElement('div');
