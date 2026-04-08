@@ -828,9 +828,10 @@
       }
       #chat-toggle { bottom: 16px; right: 16px; width: 54px; height: 54px; }
     }
+    /* prevents iOS zoom on focus — must be 16px+ with no media query restriction */
+    #chat-input { font-size: 16px; }
     @media (max-width: 480px) {
       .chat-input-row { position: sticky; bottom: 0; background: rgba(2,0,20,0.97); }
-      #chat-input { font-size: 16px; } /* prevents iOS zoom on focus */
     }
 
     .chat-header {
@@ -973,21 +974,21 @@
 
     // Fix: when mobile keyboard opens, shrink chat panel to fit visible area
     function onViewportResize() {
-      if (window.innerWidth > 480) return;
       if (!chatPanel.classList.contains('open')) return;
       const vv = window.visualViewport;
-      const visibleHeight = vv.height;
-      const offsetTop = vv.offsetTop || 0;
-      const bottomGap = 80; // space above toggle button
+      // Keyboard height = layout viewport bottom minus visual viewport bottom
+      const keyboardHeight = window.innerHeight - (vv.offsetTop + vv.height);
+      const bottomGap = keyboardHeight + 80; // sit above keyboard + toggle button
       chatPanel.style.bottom = bottomGap + 'px';
-      chatPanel.style.height = (visibleHeight - bottomGap - 10) + 'px';
-      chatPanel.style.maxHeight = (visibleHeight - bottomGap - 10) + 'px';
-      // Scroll messages to bottom so send button stays visible
+      const panelHeight = vv.height - 90;
+      chatPanel.style.height = panelHeight + 'px';
+      chatPanel.style.maxHeight = panelHeight + 'px';
       chatMsgs.scrollTop = chatMsgs.scrollHeight;
     }
 
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', onViewportResize);
+      window.visualViewport.addEventListener('scroll', onViewportResize);
     }
 
     function appendMsg(text, type) {
