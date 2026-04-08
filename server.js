@@ -315,7 +315,7 @@ app.post('/api/intel', (req, res) => {
   } else if (q.includes('kid') || q.includes('child') || q.includes('baby') || q.includes('toddler') || q.includes('family')) {
     answer = "👶 *Kids:* 100% kid-friendly event! Bring everyone — all ages welcome! 🎉";
   } else if (q.includes('dress') || q.includes('wear') || q.includes('outfit') || q.includes('attire') || q.includes('cloth')) {
-    answer = "👗 *Dress Code:* Anything comfortable, **neon, or sparkly**! This goes for kids too. Come ready to shine! ✨";
+    answer = "👗 *Dress Code:* Anything comfortable! Come as you are. 😊";
   } else if (q.includes('veg') || q.includes('food') || q.includes('eat') || q.includes('diet') || q.includes('meal') || q.includes('snack') || q.includes('drink')) {
     answer = "🥗 *Food:* Both vegetarian and non-vegetarian options will be available. There's something for everyone!";
   } else if (q.includes('cake') || q.includes('dessert') || q.includes('sweet')) {
