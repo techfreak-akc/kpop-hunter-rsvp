@@ -145,9 +145,17 @@ app.post('/api/shorten', (req, res) => {
   const { name, phone } = req.body;
   if (!name || !phone) return res.status(400).json({ error: 'name and phone required' });
   const links = loadLinks();
-  const slug = name.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+  const base = name.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
   const encodedName = encodeURIComponent(name.replace(/\s+/g, '-'));
   const fullUrl = `/mission/${encodedName}?phone=${phone}`;
+
+  // If slug already exists for a different phone, add a number suffix
+  let slug = base;
+  let counter = 2;
+  while (links[slug] && links[slug].phone !== phone) {
+    slug = `${base}${counter++}`;
+  }
+
   links[slug] = { url: fullUrl, name, phone };
   saveLinks(links);
   res.json({ shortUrl: `/invite/${slug}`, slug });
