@@ -8,8 +8,8 @@ const BASE_URL = process.env.BASE_URL || 'https://kpop-hunter-rsvp.onrender.com'
 // Guest list: add as many as you want!
 // Format: { name: 'First Last', phone: '1XXXXXXXXXX' }
 const GUESTS = [
-  // { name: 'Sarah Johnson', phone: '15551234567' },
-  // { name: 'Mike Chen', phone: '15559876543' },
+  { name: 'Neeraja Cholleti', phone: '16169008200' },
+  { name: 'Madhu Chander', phone: '919154892867' },
 ];
 
 // Read CLI argument override: node send_whatsapp.js 15551234567 "Guest Name"
@@ -56,12 +56,11 @@ client.on('ready', async () => {
     }
 
     const message =
-      `Hey ${firstName}! 🗡️\n\n` +
-      `Aaishvy is turning 6 and she's calling in her Hunter Squad! 🎂⚡\n\n` +
-      `We hand-coded this invite just for you — using AI to craft something truly one-of-a-kind. Your own personal page, a chatbot to answer all your questions about the event, and a Hunter Badge with your name on it waiting once you RSVP. 🏅\n\n` +
-      `Because you're not just any guest — you're part of her squad. 💕\n\n` +
-      `🎖️ Invite for ${guest.name}:\n${inviteLink}\n\n` +
-      `One mission. One squad. Are you in? ⚡`;
+      `Hey ${firstName}! 👋\n\n` +
+      `Aaishvy is turning 6! 🎂 We're keeping it simple — just a fun little birthday gathering with the people she loves.\n\n` +
+      `That said… we may have gone a tiny bit overboard building her invite. 😄 We coded this just for fun — your own personal page, a chatbot for party questions, and a Hunter Badge waiting after you RSVP. Because why not! 🤓⚡\n\n` +
+      `🎖️ Your invite:\n${inviteLink}\n\n` +
+      `Hope to see you there! 💕`;
 
     try {
       await client.sendMessage(chatId, message);
