@@ -74,10 +74,10 @@ app.post('/webhook', async (req, res) => {
               const replyTitle = message.interactive.button_reply.title;
               
               if (replyId === 'RSVP_YES' || replyId === 'ACCEPT_RSVP' || replyTitle.toUpperCase() === 'JOIN THE SQUAD') {
-                saveRsvp(sender, contactName, 'ACCEPTED');
+                await saveRsvp(sender, contactName, 'ACCEPTED');
                 await sendWhatsAppMessage(sender, `Thanks ${contactName}! You're on the list. See you at Concord HQ.`);
               } else if (replyId === 'RSVP_NO' || replyId === 'DECLINE_RSVP' || replyTitle.toUpperCase() === 'PASSING THIS TIME') {
-                saveRsvp(sender, contactName, 'DECLINED');
+                await saveRsvp(sender, contactName, 'DECLINED');
                 await sendWhatsAppMessage(sender, "Understood. Maybe next time.");
               }
             } 
@@ -114,20 +114,39 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-function saveRsvp(phone, name, status, extra = {}) {
-  const filePath = path.join(__dirname, 'rsvps.json');
-  let data = [];
-  if (fs.existsSync(filePath)) {
-    data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+// ── JSONBIN.IO PERSISTENT STORAGE ─────────────────────────────────────────────
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${process.env.JSONBIN_ID}`;
+const JSONBIN_HEADERS = {
+  'X-Master-Key': process.env.JSONBIN_SECRET,
+  'Content-Type': 'application/json'
+};
+
+async function readRsvps() {
+  try {
+    const res = await axios.get(`${JSONBIN_URL}/latest`, { headers: JSONBIN_HEADERS });
+    const data = res.data.record;
+    return Array.isArray(data) ? data.filter(r => r && r.phone) : [];
+  } catch (e) {
+    console.error('[JSONBin] Read failed, falling back to local:', e.message);
+    const filePath = path.join(__dirname, 'rsvps.json');
+    return fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath, 'utf8')) : [];
   }
+}
+
+async function saveRsvp(phone, name, status, extra = {}) {
+  const data = await readRsvps();
   const index = data.findIndex(r => r.phone === phone);
   const record = { phone, name, status, ...extra, timestamp: new Date() };
-  if (index !== -1) {
-    data[index] = { ...data[index], ...record };
-  } else {
-    data.push(record);
+  if (index !== -1) data[index] = { ...data[index], ...record };
+  else data.push(record);
+  try {
+    await axios.put(JSONBIN_URL, data, { headers: JSONBIN_HEADERS });
+    // Also write locally as backup
+    fs.writeFileSync(path.join(__dirname, 'rsvps.json'), JSON.stringify(data, null, 2));
+  } catch (e) {
+    console.error('[JSONBin] Write failed, saved locally only:', e.message);
+    fs.writeFileSync(path.join(__dirname, 'rsvps.json'), JSON.stringify(data, null, 2));
   }
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
 // ── SHORT URL SYSTEM ──────────────────────────────────────────────────────────
@@ -170,23 +189,17 @@ app.get('/invite/:slug', (req, res) => {
 });
 
 // Fetch a single RSVP by phone
-app.get('/api/rsvp/:phone', (req, res) => {
-  const filePath = path.join(__dirname, 'rsvps.json');
-  const data = fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath)) : [];
+app.get('/api/rsvp/:phone', async (req, res) => {
+  const data = await readRsvps();
   const record = data.find(r => r.phone === req.params.phone);
   if (record) res.json(record);
   else res.status(404).json({ error: 'Not found' });
 });
 
 // Fetch all RSVPs for dashboard
-app.get('/api/rsvps', (req, res) => {
-  const filePath = path.join(__dirname, 'rsvps.json');
-  if (fs.existsSync(filePath)) {
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    res.json(data);
-  } else {
-    res.json([]);
-  }
+app.get('/api/rsvps', async (req, res) => {
+  const data = await readRsvps();
+  res.json(data);
 });
 
 // Personalized mission RSVP page
@@ -199,7 +212,7 @@ app.post('/submit-rsvp', async (req, res) => {
   const { name, phone, status, adults, kids, food, notes } = req.body;
   const QRCode = require('qrcode');
 
-  saveRsvp(phone || 'web', name || 'Guest', status, { adults, kids, food, notes });
+  await saveRsvp(phone || 'web', name || 'Guest', status, { adults, kids, food, notes });
 
   let qrCode = null;
   if (status === 'ACCEPTED') {
