@@ -834,6 +834,16 @@
       .chat-input-row { position: sticky; bottom: 0; background: rgba(2,0,20,0.97); }
     }
 
+    /* Dark overlay behind chat panel */
+    #chat-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 98;
+      background: rgba(0,0,10,0.75);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+    }
+    #chat-overlay.active { display: block; }
+
     .chat-header {
       padding: 14px 16px;
       border-bottom: 1px solid rgba(0,245,255,0.12);
@@ -925,6 +935,9 @@
     <span id="chat-toggle-label">ASK AI</span>
   </button>
 
+  <!-- Dark overlay -->
+  <div id="chat-overlay"></div>
+
   <!-- Chat panel -->
   <div id="chat-panel">
     <div class="chat-header">
@@ -956,21 +969,35 @@
   <script>
     const chatToggle = document.getElementById('chat-toggle');
     const chatPanel = document.getElementById('chat-panel');
+    const chatOverlay = document.getElementById('chat-overlay');
     const chatMsgs = document.getElementById('chat-msgs');
     const chatInput = document.getElementById('chat-input');
 
+    function openChat() {
+      chatPanel.classList.add('open');
+      chatOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }
+
+    function closeChat() {
+      chatPanel.classList.remove('open');
+      chatOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+      chatPanel.style.bottom = '';
+      chatPanel.style.height = '';
+      chatPanel.style.maxHeight = '';
+    }
+
     chatToggle.addEventListener('click', () => {
-      chatPanel.classList.toggle('open');
-      if (chatPanel.classList.contains('open')) {
-        chatMsgs.scrollTop = chatMsgs.scrollHeight;
-        // Don't auto-focus on mobile — prevents keyboard from popping up and zooming in
-      } else {
-        // Reset any inline styles set by keyboard handler
-        chatPanel.style.bottom = '';
-        chatPanel.style.height = '';
-        chatPanel.style.maxHeight = '';
-      }
+      chatPanel.classList.contains('open') ? closeChat() : openChat();
     });
+
+    // Tapping the overlay closes the chat
+    chatOverlay.addEventListener('click', closeChat);
+
+    // Wire up the close button too
+    document.getElementById('chat-close').onclick = closeChat;
 
     // Fix: when mobile keyboard opens, shrink chat panel to fit visible area
     function onViewportResize() {

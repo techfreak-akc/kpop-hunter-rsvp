@@ -27,6 +27,30 @@
             <p class="text-cyan-400 mt-4 text-xl tracking-wider">LIVE RSVP FEED - OPERATION CONCORD</p>
         </header>
 
+        <!-- Stats summary -->
+        <div id="stats-bar" class="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
+            <div class="bg-gray-900/60 rounded-xl p-4 neon-border text-center">
+                <div id="stat-total" class="text-3xl font-bold text-cyan-300">—</div>
+                <div class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Total RSVPs</div>
+            </div>
+            <div class="bg-gray-900/60 rounded-xl p-4 border border-green-700/50 text-center" style="box-shadow:0 0 5px #22c55e,inset 0 0 5px #22c55e30">
+                <div id="stat-accepted" class="text-3xl font-bold text-green-400">—</div>
+                <div class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Accepted</div>
+            </div>
+            <div class="bg-gray-900/60 rounded-xl p-4 border border-red-700/50 text-center" style="box-shadow:0 0 5px #ef444450,inset 0 0 5px #ef444420">
+                <div id="stat-declined" class="text-3xl font-bold text-red-400">—</div>
+                <div class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Declined</div>
+            </div>
+            <div class="bg-gray-900/60 rounded-xl p-4 border border-cyan-700/50 text-center">
+                <div id="stat-adults" class="text-3xl font-bold text-cyan-300">—</div>
+                <div class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Adults 🧑</div>
+            </div>
+            <div class="bg-gray-900/60 rounded-xl p-4 border border-purple-700/50 text-center">
+                <div id="stat-kids" class="text-3xl font-bold text-purple-300">—</div>
+                <div class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Kids 👧</div>
+            </div>
+        </div>
+
         <main class="w-full">
             <div class="bg-gray-900/50 backdrop-blur-md rounded-xl p-8 neon-border">
                 <div class="flex justify-between items-center mb-6 border-b border-cyan-800 pb-4">
@@ -75,10 +99,23 @@
             }
         }
 
+        function updateStats() {
+            const accepted = allData.filter(r => r.status === 'ACCEPTED');
+            const declined = allData.filter(r => r.status === 'DECLINED');
+            const totalAdults = accepted.reduce((s, r) => s + (parseInt(r.adults) || 0), 0);
+            const totalKids   = accepted.reduce((s, r) => s + (parseInt(r.kids)   || 0), 0);
+            document.getElementById('stat-total').textContent    = allData.length;
+            document.getElementById('stat-accepted').textContent = accepted.length;
+            document.getElementById('stat-declined').textContent = declined.length;
+            document.getElementById('stat-adults').textContent   = totalAdults || '—';
+            document.getElementById('stat-kids').textContent     = totalKids   || '—';
+        }
+
         function renderTable() {
             const tbody = document.getElementById('rsvp-body');
             const searchVal = document.getElementById('search-input').value.toLowerCase();
             tbody.innerHTML = '';
+            updateStats();
             
             const filteredData = allData.filter(rsvp => 
                 (rsvp.name && rsvp.name.toLowerCase().includes(searchVal)) || 
