@@ -121,49 +121,69 @@ const JSONBIN_HEADERS = {
   'Content-Type': 'application/json'
 };
 
-async function readRsvps() {
+// Bin structure: { rsvps: [...], links: { slug: { url, name, phone } } }
+async function readBin() {
   try {
     const res = await axios.get(`${JSONBIN_URL}/latest`, { headers: JSONBIN_HEADERS });
-    const data = res.data.record;
-    return Array.isArray(data) ? data.filter(r => r && r.phone) : [];
+    const record = res.data.record;
+    // Migrate old array-only format
+    if (Array.isArray(record)) return { rsvps: record.filter(r => r && r.phone), links: {} };
+    return {
+      rsvps: Array.isArray(record.rsvps) ? record.rsvps.filter(r => r && r.phone) : [],
+      links: record.links && typeof record.links === 'object' ? record.links : {}
+    };
   } catch (e) {
     console.error('[JSONBin] Read failed, falling back to local:', e.message);
-    const filePath = path.join(__dirname, 'rsvps.json');
-    return fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath, 'utf8')) : [];
+    const rsvpsPath = path.join(__dirname, 'rsvps.json');
+    const linksPath = path.join(__dirname, 'shortlinks.json');
+    return {
+      rsvps: fs.existsSync(rsvpsPath) ? JSON.parse(fs.readFileSync(rsvpsPath, 'utf8')) : [],
+      links: fs.existsSync(linksPath) ? JSON.parse(fs.readFileSync(linksPath, 'utf8')) : {}
+    };
   }
+}
+
+async function writeBin(data) {
+  try {
+    await axios.put(JSONBIN_URL, data, { headers: JSONBIN_HEADERS });
+  } catch (e) {
+    console.error('[JSONBin] Write failed, saved locally only:', e.message);
+  }
+  // Always write local backups
+  fs.writeFileSync(path.join(__dirname, 'rsvps.json'), JSON.stringify(data.rsvps, null, 2));
+  fs.writeFileSync(path.join(__dirname, 'shortlinks.json'), JSON.stringify(data.links, null, 2));
+}
+
+async function readRsvps() {
+  return (await readBin()).rsvps;
 }
 
 async function saveRsvp(phone, name, status, extra = {}) {
-  const data = await readRsvps();
-  const index = data.findIndex(r => r.phone === phone);
+  const bin = await readBin();
+  const index = bin.rsvps.findIndex(r => r.phone === phone);
   const record = { phone, name, status, ...extra, timestamp: new Date() };
-  if (index !== -1) data[index] = { ...data[index], ...record };
-  else data.push(record);
-  try {
-    await axios.put(JSONBIN_URL, data, { headers: JSONBIN_HEADERS });
-    // Also write locally as backup
-    fs.writeFileSync(path.join(__dirname, 'rsvps.json'), JSON.stringify(data, null, 2));
-  } catch (e) {
-    console.error('[JSONBin] Write failed, saved locally only:', e.message);
-    fs.writeFileSync(path.join(__dirname, 'rsvps.json'), JSON.stringify(data, null, 2));
-  }
+  if (index !== -1) bin.rsvps[index] = { ...bin.rsvps[index], ...record };
+  else bin.rsvps.push(record);
+  await writeBin(bin);
+}
+
+async function readLinks() {
+  return (await readBin()).links;
+}
+
+async function saveLinks(links) {
+  const bin = await readBin();
+  bin.links = links;
+  await writeBin(bin);
 }
 
 // ── SHORT URL SYSTEM ──────────────────────────────────────────────────────────
-const LINKS_FILE = path.join(__dirname, 'shortlinks.json');
-
-function loadLinks() {
-  return fs.existsSync(LINKS_FILE) ? JSON.parse(fs.readFileSync(LINKS_FILE)) : {};
-}
-function saveLinks(links) {
-  fs.writeFileSync(LINKS_FILE, JSON.stringify(links, null, 2));
-}
 
 // Create a short link: POST /api/shorten { name, phone }
-app.post('/api/shorten', (req, res) => {
+app.post('/api/shorten', async (req, res) => {
   const { name, phone } = req.body;
   if (!name || !phone) return res.status(400).json({ error: 'name and phone required' });
-  const links = loadLinks();
+  const links = await readLinks();
   const base = name.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
   const encodedName = encodeURIComponent(name.replace(/\s+/g, '-'));
   const fullUrl = `/mission/${encodedName}?phone=${phone}`;
@@ -176,13 +196,13 @@ app.post('/api/shorten', (req, res) => {
   }
 
   links[slug] = { url: fullUrl, name, phone };
-  saveLinks(links);
+  await saveLinks(links);
   res.json({ shortUrl: `/invite/${slug}`, slug });
 });
 
 // Redirect short link: GET /invite/:slug
-app.get('/invite/:slug', (req, res) => {
-  const links = loadLinks();
+app.get('/invite/:slug', async (req, res) => {
+  const links = await readLinks();
   const entry = links[req.params.slug];
   if (entry) res.redirect(entry.url);
   else res.status(404).send('Invite not found');
