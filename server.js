@@ -270,8 +270,8 @@ app.post('/api/intel', (req, res) => {
 
   // ── Party details ─────────────────────────────────────────────────────────
   let answer;
-  if (q.includes('start') || q.includes('begin') || q.includes('what time') || (q.includes('time') && !q.includes('end time'))) {
-    answer = "⏰ *Start Time:* The hunt kicks off at **6:00 PM EST (18:00 hours)** on **April 19th, 2026**. Don't be late, Hunter!";
+  if (q.includes('start') || q.includes('begin') || q.includes('what time') || q.includes('date') || q.includes('when is') || q.includes('what day') || q.includes('which day') || q.includes('when') || (q.includes('time') && !q.includes('end time'))) {
+    answer = "⏰ *Date & Time:* The hunt kicks off on **April 19th, 2026 at 6:00 PM EST**. Don't be late, Hunter!";
   } else if (q.includes('end time') || q.includes('finish') || q.includes('when does it end') || q.includes('duration') || q.includes('how long')) {
     answer = "🎉 *End Time:* There is **no fixed end time** — the party goes on! Come and stay as long as you like. 😄";
   } else if (q.includes('venue') || q.includes('coordinat') || q.includes('map') || q.includes('address') || q.includes('direction') || q.includes('where') || q.includes('gps') || q.includes('location') || q.includes('send loc')) {
@@ -287,7 +287,7 @@ app.post('/api/intel', (req, res) => {
   } else if (q.includes('dress') || q.includes('wear') || q.includes('outfit') || q.includes('attire') || q.includes('cloth')) {
     answer = "👗 *Dress Code:* Anything comfortable, **neon, or sparkly**! This goes for kids too. Come ready to shine! ✨";
   } else if (q.includes('veg') || q.includes('food') || q.includes('eat') || q.includes('diet') || q.includes('meal') || q.includes('snack') || q.includes('drink')) {
-    answer = "🥗 *Food:* Yes! Vegetarian options will be available. There's something for everyone!";
+    answer = "🥗 *Food:* Both vegetarian and non-vegetarian options will be available. There's something for everyone!";
   } else if (q.includes('cake') || q.includes('dessert') || q.includes('sweet')) {
     answer = "🎂 *Cake:* Yes — there WILL be a birthday cake! 🎉 Aaishvy approved.";
   } else if (q.includes('theme') || q.includes('kpop') || q.includes('k-pop') || q.includes('demon') || q.includes('hunter') || q.includes('netflix')) {
