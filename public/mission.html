@@ -976,6 +976,7 @@
     function openChat() {
       chatPanel.classList.add('open');
       chatOverlay.classList.add('active');
+      chatToggle.style.display = 'none';
       // iOS Safari ignores overflow:hidden on body — use position:fixed trick instead
       _scrollY = window.scrollY;
       document.body.style.position = 'fixed';
@@ -987,6 +988,7 @@
     function closeChat() {
       chatPanel.classList.remove('open');
       chatOverlay.classList.remove('active');
+      chatToggle.style.display = '';
       // Restore scroll position
       document.body.style.position = '';
       document.body.style.top = '';
