@@ -167,15 +167,25 @@ async function saveRsvp(phone, name, status, extra = {}) {
   await writeBin(bin);
 }
 
+// In-memory cache for links — loaded once on startup, instant on redirect
+let linksCache = null;
+
 async function readLinks() {
-  return (await readBin()).links;
+  if (linksCache) return linksCache;
+  const bin = await readBin();
+  linksCache = bin.links;
+  return linksCache;
 }
 
 async function saveLinks(links) {
+  linksCache = links; // update cache immediately
   const bin = await readBin();
   bin.links = links;
   await writeBin(bin);
 }
+
+// Pre-load links into cache on startup
+readLinks().then(() => console.log('[Cache] Short links loaded into memory'));
 
 // ── SHORT URL SYSTEM ──────────────────────────────────────────────────────────
 
