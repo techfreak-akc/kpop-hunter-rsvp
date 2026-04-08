@@ -130,6 +130,37 @@ function saveRsvp(phone, name, status, extra = {}) {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
+// ── SHORT URL SYSTEM ──────────────────────────────────────────────────────────
+const LINKS_FILE = path.join(__dirname, 'shortlinks.json');
+
+function loadLinks() {
+  return fs.existsSync(LINKS_FILE) ? JSON.parse(fs.readFileSync(LINKS_FILE)) : {};
+}
+function saveLinks(links) {
+  fs.writeFileSync(LINKS_FILE, JSON.stringify(links, null, 2));
+}
+
+// Create a short link: POST /api/shorten { name, phone }
+app.post('/api/shorten', (req, res) => {
+  const { name, phone } = req.body;
+  if (!name || !phone) return res.status(400).json({ error: 'name and phone required' });
+  const links = loadLinks();
+  const slug = name.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+  const encodedName = encodeURIComponent(name.replace(/\s+/g, '-'));
+  const fullUrl = `/mission/${encodedName}?phone=${phone}`;
+  links[slug] = { url: fullUrl, name, phone };
+  saveLinks(links);
+  res.json({ shortUrl: `/invite/${slug}`, slug });
+});
+
+// Redirect short link: GET /invite/:slug
+app.get('/invite/:slug', (req, res) => {
+  const links = loadLinks();
+  const entry = links[req.params.slug];
+  if (entry) res.redirect(entry.url);
+  else res.status(404).send('Invite not found');
+});
+
 // Fetch a single RSVP by phone
 app.get('/api/rsvp/:phone', (req, res) => {
   const filePath = path.join(__dirname, 'rsvps.json');

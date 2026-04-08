@@ -473,7 +473,7 @@
       </div>
       <div class="stat-card y" style="grid-column:1/-1">
         <div class="stat-label">🎌 DRESS CODE</div>
-        <div class="stat-val">Neon / Sparkly / K-pop Energy ✨</div>
+        <div class="stat-val">Anything Comfortable or Neon / Sparkly ✨</div>
       </div>
     </div>
 
@@ -957,8 +957,8 @@
     chatToggle.addEventListener('click', () => {
       chatPanel.classList.toggle('open');
       if (chatPanel.classList.contains('open')) {
-        chatInput.focus();
         chatMsgs.scrollTop = chatMsgs.scrollHeight;
+        // Don't auto-focus on mobile — prevents keyboard from popping up and zooming in
       }
     });
 

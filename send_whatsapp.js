@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
+const axios = require('axios');
 
 const BASE_URL = process.env.BASE_URL || 'https://kpop-hunter-rsvp.onrender.com';
 
@@ -42,22 +43,29 @@ client.on('ready', async () => {
   for (const guest of GUESTS) {
     const phone = guest.phone.replace(/\D/g, ''); // strip non-digits
     const chatId = `${phone}@c.us`;
-    const encodedName = encodeURIComponent(guest.name.replace(/\s+/g, '-'));
-    const missionLink = `${BASE_URL}/mission/${encodedName}?phone=${phone}`;
+    const firstName = guest.name.split(' ')[0];
+
+    // Generate short URL via server API
+    let inviteLink = `${BASE_URL}/mission/${encodeURIComponent(guest.name.replace(/\s+/g, '-'))}?phone=${phone}`;
+    try {
+      const { data } = await axios.post(`${BASE_URL}/api/shorten`, { name: guest.name, phone });
+      inviteLink = `${BASE_URL}${data.shortUrl}`;
+      console.log(`[🔗] Short link → ${inviteLink}`);
+    } catch (e) {
+      console.warn(`[!] Short URL failed, using full URL: ${e.message}`);
+    }
 
     const message =
-      `Hey ${guest.name.split(' ')[0]}! 🗡️\n\n` +
+      `Hey ${firstName}! 🗡️\n\n` +
       `Aaishvy is turning 6 and she's calling in her Hunter Squad! 🎂⚡\n\n` +
       `We hand-coded this invite just for you — using AI to craft something truly one-of-a-kind. Your own personal page, a chatbot to answer all your questions about the event, and a Hunter Badge with your name on it waiting once you RSVP. 🏅\n\n` +
       `Because you're not just any guest — you're part of her squad. 💕\n\n` +
-      `👇 Open your personal invite below:\n${missionLink}\n\n` +
+      `🎖️ Invite for ${guest.name}:\n${inviteLink}\n\n` +
       `One mission. One squad. Are you in? ⚡`;
-
 
     try {
       await client.sendMessage(chatId, message);
       console.log(`[✓] Invite sent → ${guest.name} (${phone})`);
-      // Small delay between messages to avoid spam detection
       await new Promise(r => setTimeout(r, 2000));
     } catch (err) {
       console.error(`[✗] Failed → ${guest.name}: ${err.message}`);
