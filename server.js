@@ -234,8 +234,41 @@ app.post('/submit-rsvp', async (req, res) => {
 // AI Intel Agent endpoint
 app.post('/api/intel', (req, res) => {
   const { question } = req.body;
-  if (!question) return res.json({ answer: "Agency Command awaiting your query." });
-  const q = question.toLowerCase();
+  if (!question || !question.trim()) return res.json({ answer: "👋 Hey there, Hunter! Ask me anything about Aaishvy's party — time, venue, dress code, food, and more!" });
+  const q = question.toLowerCase().trim();
+
+  // ── Greetings ────────────────────────────────────────────────────────────
+  const greetings = ['hi', 'hey', 'hello', 'howdy', 'hiya', 'sup', 'what\'s up', 'whats up', 'yo', 'greetings', 'good morning', 'good afternoon', 'good evening', 'namaste', 'helo', 'hii', 'heyyy', 'helloo'];
+  if (greetings.some(g => q === g || q.startsWith(g + ' ') || q.startsWith(g + '!') || q.startsWith(g + ','))) {
+    const replies = [
+      "👋 Hey there, Hunter! Welcome to Aaishvy's 6th birthday command center! Ask me about the venue, time, dress code, food, or anything about the party! ⚡",
+      "🎉 Hello, Operative! Hunter Command is online and ready. What would you like to know about the party?",
+      "👋 Hi! So glad you're here! Ask me anything about Aaishvy's K-pop Demon Hunter party! 🗡️"
+    ];
+    return res.json({ answer: replies[Math.floor(Math.random() * replies.length)] });
+  }
+
+  // ── Thank you / Acknowledgements ─────────────────────────────────────────
+  if (q.includes('thank') || q.includes('thanks') || q === 'ok' || q === 'okay' || q === 'got it' || q === 'cool' || q === 'great' || q === 'awesome' || q === 'perfect' || q.includes('noted') || q === 'nice') {
+    const replies = [
+      "😊 Anytime, Hunter! Let me know if you have any other questions about the party!",
+      "🎖️ Happy to help! See you at the hunt on April 19th! ⚡",
+      "👍 You're all set! Anything else you'd like to know?"
+    ];
+    return res.json({ answer: replies[Math.floor(Math.random() * replies.length)] });
+  }
+
+  // ── How are you / small talk ──────────────────────────────────────────────
+  if (q.includes('how are you') || q.includes('how r u') || q.includes('how are u') || q === 'wassup' || q === 'wsp' || q.includes('what are you') || q.includes('who are you')) {
+    return res.json({ answer: "🤖 I'm Hunter Command — your personal party intel bot for Aaishvy's 6th birthday! I'm trained to answer all your party questions. What would you like to know? 🎉" });
+  }
+
+  // ── Yes / No confirmations ────────────────────────────────────────────────
+  if (q === 'yes' || q === 'yep' || q === 'yup' || q === 'yeah' || q === 'sure' || q === 'no' || q === 'nope' || q === 'nah') {
+    return res.json({ answer: "😄 Got it! Feel free to ask me anything about the party — time, location, dress code, food, gifts, and more! 🎂" });
+  }
+
+  // ── Party details ─────────────────────────────────────────────────────────
   let answer;
   if (q.includes('start') || q.includes('begin') || q.includes('what time') || (q.includes('time') && !q.includes('end time'))) {
     answer = "⏰ *Start Time:* The hunt kicks off at **6:00 PM EST (18:00 hours)** on **April 19th, 2026**. Don't be late, Hunter!";
@@ -247,13 +280,13 @@ app.post('/api/intel', (req, res) => {
     answer = "🚗 *Parking:* Ample street parking is available right outside — no codes, no hassle!";
   } else if (q.includes('rsvp') || q.includes('deadline') || q.includes('last day') || q.includes('confirm') || q.includes('cancel') || q.includes('update')) {
     answer = "📋 *RSVP Deadline:* Please confirm by **April 16th, 2026**.\n\nNeed to cancel or update? Use the **same RSVP link** you received to update your status.";
-  } else if (q.includes('plus one') || q.includes('guest') || q.includes('bring') && q.includes('friend') || q.includes('extra')) {
+  } else if (q.includes('plus one') || (q.includes('bring') && q.includes('friend')) || q.includes('extra person') || q.includes('extra guest')) {
     answer = "👥 *Plus Ones:* Absolutely — bring as many guests as you like! The more the merrier! 🎉";
   } else if (q.includes('kid') || q.includes('child') || q.includes('baby') || q.includes('toddler') || q.includes('family')) {
     answer = "👶 *Kids:* 100% kid-friendly event! Bring everyone — all ages welcome! 🎉";
-  } else if (q.includes('dress') || q.includes('wear') || q.includes('outfit') || q.includes('code') || q.includes('cloth')) {
+  } else if (q.includes('dress') || q.includes('wear') || q.includes('outfit') || q.includes('attire') || q.includes('cloth')) {
     answer = "👗 *Dress Code:* Anything comfortable, **neon, or sparkly**! This goes for kids too. Come ready to shine! ✨";
-  } else if (q.includes('veg') || q.includes('food') || q.includes('eat') || q.includes('diet') || q.includes('meal')) {
+  } else if (q.includes('veg') || q.includes('food') || q.includes('eat') || q.includes('diet') || q.includes('meal') || q.includes('snack') || q.includes('drink')) {
     answer = "🥗 *Food:* Yes! Vegetarian options will be available. There's something for everyone!";
   } else if (q.includes('cake') || q.includes('dessert') || q.includes('sweet')) {
     answer = "🎂 *Cake:* Yes — there WILL be a birthday cake! 🎉 Aaishvy approved.";
@@ -261,12 +294,17 @@ app.post('/api/intel', (req, res) => {
     answer = "🎤 *Theme:* K-pop Demon Hunters! It's Aaishvy's current obsession — she loves watching the show and pretending to be a Hunter from the popular **Netflix Demon Hunters** series. Neon, fierce, and full of energy! ⚡";
   } else if (q.includes('contact') || q.includes('late') || q.includes('reach') || q.includes('call') || q.includes('arun')) {
     answer = "📱 *Contact:* Running late or have questions? Reach out to Aaishvy's father — **Arun Cholleti** directly via WhatsApp. 🎖️";
-  } else if (q.includes('host') || q.includes('who') || q.includes('parent') || q.includes('organiz')) {
+  } else if (q.includes('host') || q.includes('parent') || q.includes('organiz') || q.includes('whose') || q.includes('birthday')) {
     answer = "🏠 *Hosts:* The party is hosted by **Arun Cholleti** and **Neeraja Cholleti** — Aaishvy's proud parents! 💕";
-  } else if (q.includes('gift') || q.includes('present') || q.includes('registry')) {
+  } else if (q.includes('gift') || q.includes('present') || q.includes('registry') || q.includes('bring anything')) {
     answer = "🎁 *Gifts:* Your presence is the best gift! No registry. If you'd like to bring something, Aaishvy loves art supplies, K-pop merch, or books. 💕";
+  } else if (q.includes('age') || q.includes('how old') || q.includes('turning') || q.includes('6th') || q.includes('sixth')) {
+    answer = "🎂 Aaishvy is turning **6 years old**! She's absolutely thrilled about her K-pop Demon Hunter party! ⚡";
+  } else if (q.includes('music') || q.includes('song') || q.includes('dance') || q.includes('activity') || q.includes('game') || q.includes('play')) {
+    answer = "🎵 *Activities:* Expect K-pop music, fun games, and lots of energy! It's going to be an epic celebration! ⚡🗡️";
   } else {
-    answer = "🤖 *Agency Command:* Solid query, Operative. For this specific intel, contact **Arun Cholleti** directly via WhatsApp — full clearance granted! 🎖️";
+    // Friendly fallback with suggestions
+    answer = "🤔 I didn't quite catch that! I'm best at answering questions about the party. Try asking me:\n\n📍 *Where is the venue?*\n⏰ *What time does it start?*\n👗 *What should I wear?*\n🎁 *Should I bring a gift?*\n\nOr reach out to **Arun Cholleti** on WhatsApp for anything else! 🎖️";
   }
   res.json({ answer });
 });
