@@ -301,7 +301,7 @@ app.post('/api/intel', (req, res) => {
   // ── Party details ─────────────────────────────────────────────────────────
   let answer;
   if (q.includes('start') || q.includes('begin') || q.includes('what time') || q.includes('date') || q.includes('when is') || q.includes('what day') || q.includes('which day') || q.includes('when') || (q.includes('time') && !q.includes('end time'))) {
-    answer = "⏰ *Date & Time:* The hunt kicks off on **April 19th, 2026 at 6:00 PM EST**. Don't be late, Hunter!";
+    answer = "⏰ *Date & Time:* The hunt kicks off on **April 19th, 2026 at 6:30 PM EST**. Don't be late, Hunter!";
   } else if (q.includes('end time') || q.includes('finish') || q.includes('when does it end') || q.includes('duration') || q.includes('how long')) {
     answer = "🎉 *End Time:* There is **no fixed end time** — the party goes on! Come and stay as long as you like. 😄";
   } else if (q.includes('venue') || q.includes('coordinat') || q.includes('map') || q.includes('address') || q.includes('direction') || q.includes('where') || q.includes('gps') || q.includes('location') || q.includes('send loc')) {
