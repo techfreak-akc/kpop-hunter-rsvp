@@ -828,8 +828,6 @@
       }
       #chat-toggle { bottom: 16px; right: 16px; width: 54px; height: 54px; }
     }
-    /* prevents iOS zoom on focus — must be 16px+ with no media query restriction */
-    #chat-input { font-size: 16px; }
     @media (max-width: 480px) {
       .chat-input-row { position: sticky; bottom: 0; background: rgba(2,0,20,0.97); }
     }
@@ -918,7 +916,7 @@
     #chat-input {
       flex: 1; background: transparent; border: none;
       color: #fff; font-family: 'Share Tech Mono', monospace;
-      font-size: 12px; padding: 12px 14px; outline: none;
+      font-size: 16px; padding: 12px 14px; outline: none; /* 16px prevents iOS zoom on focus */
     }
     #chat-input::placeholder { color: rgba(0,245,255,0.25); }
     #chat-send {
@@ -973,17 +971,27 @@
     const chatMsgs = document.getElementById('chat-msgs');
     const chatInput = document.getElementById('chat-input');
 
+    let _scrollY = 0;
+
     function openChat() {
       chatPanel.classList.add('open');
       chatOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
+      // iOS Safari ignores overflow:hidden on body — use position:fixed trick instead
+      _scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${_scrollY}px`;
+      document.body.style.width = '100%';
       chatMsgs.scrollTop = chatMsgs.scrollHeight;
     }
 
     function closeChat() {
       chatPanel.classList.remove('open');
       chatOverlay.classList.remove('active');
-      document.body.style.overflow = '';
+      // Restore scroll position
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, _scrollY);
       chatPanel.style.bottom = '';
       chatPanel.style.height = '';
       chatPanel.style.maxHeight = '';
@@ -999,15 +1007,16 @@
     // Wire up the close button too
     document.getElementById('chat-close').onclick = closeChat;
 
-    // Fix: when mobile keyboard opens, shrink chat panel to fit visible area
+    // Reposition panel when keyboard opens so send button stays visible
     function onViewportResize() {
       if (!chatPanel.classList.contains('open')) return;
       const vv = window.visualViewport;
-      // Keyboard height = layout viewport bottom minus visual viewport bottom
-      const keyboardHeight = window.innerHeight - (vv.offsetTop + vv.height);
-      const bottomGap = keyboardHeight + 80; // sit above keyboard + toggle button
-      chatPanel.style.bottom = bottomGap + 'px';
-      const panelHeight = vv.height - 90;
+      // Distance from layout viewport bottom to visual viewport bottom = keyboard height
+      const keyboardHeight = window.innerHeight - vv.offsetTop - vv.height;
+      // Pin panel bottom just above the keyboard (8px gap)
+      chatPanel.style.bottom = (keyboardHeight + 8) + 'px';
+      // Fill the remaining visible height minus that gap
+      const panelHeight = vv.height - 16;
       chatPanel.style.height = panelHeight + 'px';
       chatPanel.style.maxHeight = panelHeight + 'px';
       chatMsgs.scrollTop = chatMsgs.scrollHeight;
